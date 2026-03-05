@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jazz Chord Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0e0d0b;
+    --surface: #1a1814;
+    --card: #201e1a;
+    --border: #3a3530;
+    --gold: #c8a84b;
+    --gold-dim: #8a6f2e;
+    --cream: #f0e8d5;
+    --muted: #7a7060;
+    --white-key: #f5f0e8;
+    --black-key: #1a1612;
+    --pressed: #c8a84b;
+    --pressed-black: #9a7a2e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'IBM Plex Mono', monospace;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  header p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .root-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .root-selector label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.3rem;
+  }
+
+  .root-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+
+  .root-btn:hover { border-color: var(--gold-dim); color: var(--gold); }
+  .root-btn.active {
+    background: var(--gold);
+    color: var(--bg);
+    border-color: var(--gold);
+    font-weight: 600;
+  }
+
+  .chord-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .chord-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.2rem;
+    transition: border-color 0.2s;
+  }
+
+  .chord-card:hover { border-color: var(--gold-dim); }
+
+  .chord-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin-bottom: 0.2rem;
+  }
+
+  .chord-alias {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.06em;
+  }
+
+  .chord-formula {
+    font-size: 0.72rem;
+    color: var(--gold-dim);
+    margin-bottom: 1rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* Piano diagram */
+  .piano-wrap {
+    position: relative;
+    height: 90px;
+    margin-bottom: 0.8rem;
+    user-select: none;
+  }
+
+  .piano-keys {
+    position: relative;
+    display: flex;
+    height: 100%;
+    border-radius: 0 0 4px 4px;
+    overflow: visible;
+  }
+
+  .white-key {
+    flex: 1;
+    background: var(--white-key);
+    border: 1px solid #aaa;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    position: relative;
+    z-index: 1;
+    transition: background 0.1s;
+    min-width: 0;
+  }
+
+  .white-key.pressed {
+    background: var(--pressed);
+  }
+
+  .white-key .dot {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--pressed);
+    border: 2px solid #7a5a1a;
+    display: none;
+  }
+
+  .white-key.pressed .dot {
+    display: block;
+    background: var(--bg);
+    border-color: var(--bg);
+  }
+
+  .black-key {
+    position: absolute;
+    top: 0;
+    width: 60%;
+    height: 60%;
+    background: var(--black-key);
+    border-radius: 0 0 3px 3px;
+    z-index: 2;
+    border: 1px solid #000;
+    border-top: none;
+    transition: background 0.1s;
+  }
+
+  .black-key.pressed {
+    background: var(--pressed-black);
+  }
+
+  .black-key .dot {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 1.5px solid #7a5a1a;
+    display: none;
+  }
+
+  .black-key.pressed .dot {
+    display: block;
+    background: var(--cream);
+    border-color: var(--cream);
+  }
+
+  .notes-row {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .note-tag {
+    font-size: 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  .note-tag.root-tag {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .chord-vibe {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 0.6rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 2rem auto 0.8rem;
+    max-width: 1100px;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jazz Chord Reference</h1>
+  <p>Standard voicings · Interactive piano diagrams</p>
+</header>
+
+<div class="root-selector">
+  <label>Root Note</label>
+  <button class="root-btn active" data-root="C">C</button>
+  <button class="root-btn" data-root="Db">D♭</button>
+  <button class="root-btn" data-root="D">D</button>
+  <button class="root-btn" data-root="Eb">E♭</button>
+  <button class="root-btn" data-root="E">E</button>
+  <button class="root-btn" data-root="F">F</button>
+  <button class="root-btn" data-root="Gb">G♭</button>
+  <button class="root-btn" data-root="G">G</button>
+  <button class="root-btn" data-root="Ab">A♭</button>
+  <button class="root-btn" data-root="A">A</button>
+  <button class="root-btn" data-root="Bb">B♭</button>
+  <button class="root-btn" data-root="B">B</button>
+</div>
+
+<div id="chord-container"></div>
+
+<footer>Change root note above to transpose all chords · Dots = notes to play</footer>
+
+<script>
+// All 12 chromatic pitches
+const CHROMATIC = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+
+// Chord types: name, intervals (semitones from root), formula, alias, vibe
+const CHORD_TYPES = [
+  {
+    section: "Essential Jazz Chords",
+    chords: [
+      { type: "maj7",    name: "Major 7th",          intervals: [0,4,7,11], formula: "1 – 3 – 5 – 7",        alias: "Cmaj7, CΔ7",        vibe: "Lush, dreamy, sophisticated. The sound of classic jazz ballads." },
+      { type: "7",       name: "Dominant 7th",        intervals: [0,4,7,10], formula: "1 – 3 – 5 – ♭7",       alias: "C7",                vibe: "Bluesy tension. Essential for blues, bebop, and II-V-I resolutions." },
+      { type: "m7",      name: "Minor 7th",           intervals: [0,3,7,10], formula: "1 – ♭3 – 5 – ♭7",      alias: "Cm7, C-7",          vibe: "Smooth and cool. The 'ii' chord in ii-V-I progressions." },
+      { type: "m7b5",    name: "Half-Diminished",     intervals: [0,3,6,10], formula: "1 – ♭3 – ♭5 – ♭7",     alias: "Cm7♭5, Cø7",        vibe: "Dark tension. Common 'ii' chord in minor ii-V-i." },
+      { type: "dim7",    name: "Diminished 7th",      intervals: [0,3,6,9],  formula: "1 – ♭3 – ♭5 – ♭♭7",    alias: "Cdim7, C°7",        vibe: "Maximum tension. Symmetrical — same chord every 3 semitones." },
+      { type: "mMaj7",   name: "Minor Major 7th",     intervals: [0,3,7,11], formula: "1 – ♭3 – 5 – 7",       alias: "CmMaj7, Cm(Δ7)",    vibe: "Cinematic and mysterious. Think spy films, Coltrane's 'Impressions'." },
+    ]
+  },
+  {
+    section: "Extended & Altered",
+    chords: [
+      { type: "9",       name: "Dominant 9th",        intervals: [0,4,7,10,14], formula: "1 – 3 – 5 – ♭7 – 9",    alias: "C9",             vibe: "Fuller dominant. Adds color without the bite of alterations." },
+      { type: "maj9",    name: "Major 9th",            intervals: [0,4,7,11,14], formula: "1 – 3 – 5 – 7 – 9",     alias: "Cmaj9, CΔ9",     vibe: "Romantic and open. The jazz standard's bread and butter." },
+      { type: "m9",      name: "Minor 9th",            intervals: [0,3,7,10,14], formula: "1 – ♭3 – 5 – ♭7 – 9",   alias: "Cm9",            vibe: "Soul and R&B territory. Rich and warm." },
+      { type: "7b9",     name: "Dominant 7♭9",         intervals: [0,4,7,10,13], formula: "1 – 3 – 5 – ♭7 – ♭9",   alias: "C7♭9",           vibe: "Intense Spanish/flamenco tension. Beloved in bebop." },
+      { type: "7s11",    name: "Dominant 7#11",        intervals: [0,4,7,10,18], formula: "1 – 3 – 5 – ♭7 – #11",  alias: "C7#11, Lydian ♭7",vibe: "The 'Simpsons' chord. Tritone sub sound. Bright and strange." },
+      { type: "13",      name: "Dominant 13th",        intervals: [0,4,7,10,14,21], formula: "1 – 3 – ♭7 – 9 – 13", alias: "C13",           vibe: "Big band swagger. Full and declarative." },
+    ]
+  },
+  {
+    section: "Common Substitutes & Colors",
+    chords: [
+      { type: "6",       name: "Major 6th",           intervals: [0,4,7,9],  formula: "1 – 3 – 5 – 6",        alias: "C6",                vibe: "Bright alternative to maj7. Great as a tonic resolution chord." },
+      { type: "m6",      name: "Minor 6th",            intervals: [0,3,7,9],  formula: "1 – ♭3 – 5 – 6",       alias: "Cm6",               vibe: "Exotic minor color. Used in minor key progressions as tonic." },
+      { type: "sus2",    name: "Suspended 2nd",        intervals: [0,2,7],    formula: "1 – 2 – 5",            alias: "Csus2",             vibe: "Open and ambiguous. Common in modern jazz and ECM-style music." },
+      { type: "sus4",    name: "Suspended 4th",        intervals: [0,5,7,10], formula: "1 – 4 – 5 – ♭7",       alias: "C7sus4",            vibe: "Quartal sound. Herbie Hancock, McCoy Tyner territory." },
+      { type: "add9",    name: "Added 9th",            intervals: [0,4,7,14], formula: "1 – 3 – 5 – 9",        alias: "Cadd9",             vibe: "Simple sparkle. No 7th — sounds more open and contemporary." },
+      { type: "aug",     name: "Augmented",            intervals: [0,4,8],    formula: "1 – 3 – #5",           alias: "Caug, C+",          vibe: "Unstable, ascending tension. Symmetrical — repeats every 4 semitones." },
+    ]
+  }
+];
+
+// Layout of one octave on piano (14 white keys shown: C to E next octave)
+// We show keys C through B+extra, with positions
+// White keys: C D E F G A B  (indices 0,1,2,3,4,5,6)
+// Black keys: C# Db D# Eb F# Gb G# Ab A# Bb
+
+// We'll display 2 octaves worth of white keys (C to C+octave = 8 whites, but let's do 15 whites for C to B + C)
+// Map semitone -> position info
+// White key positions (0-indexed): C=0,D=1,E=2,F=3,G=4,A=5,B=6
+// Black keys sit between whites
+
+const WHITE_SEMITONES = [0,2,4,5,7,9,11]; // C D E F G A B
+const BLACK_SEMITONES = [1,3,6,8,10];     // Db Eb Gb Ab Bb
+
+// Black key positions (fraction of white key width, offset from left of their white key)
+// Db after C (pos 0), Eb after D (pos 1), Gb after F (pos 3), Ab after G (pos 4), Bb after A (pos 5)
+const BLACK_AFTER_WHITE = {1:0, 3:1, 6:3, 8:4, 10:5}; // semitone -> white key index it follows
+
+function getNoteName(semitone, root) {
+  return CHROMATIC[semitone % 12];
+}
+
+function buildPiano(pressedSemitones) {
+  // We show one octave (7 whites, 5 blacks)
+  const numWhites = 7;
+  
+  const container = document.createElement('div');
+  container.className = 'piano-wrap';
+  
+  const keysDiv = document.createElement('div');
+  keysDiv.className = 'piano-keys';
+  keysDiv.style.position = 'relative';
+  
+  // Draw white keys
+  const whiteKeyEls = [];
+  WHITE_SEMITONES.forEach((sem, i) => {
+    const key = document.createElement('div');
+    key.className = 'white-key';
+    if (pressedSemitones.includes(sem)) key.classList.add('pressed');
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    key.appendChild(dot);
+    keysDiv.appendChild(key);
+    whiteKeyEls.push({ el: key, sem, idx: i });
+  });
+  
+  container.appendChild(keysDiv);
+  
+  // Draw black keys after layout (need offsetLeft of whites)
+  // We'll do it via CSS — absolute position based on white key percentage
+  // Each white key = 100/7 % wide
+  const whiteW = 100 / numWhites;
+  
+  BLACK_SEMITONES.forEach(sem => {
+    const afterIdx = BLACK_AFTER_WHITE[sem]; // which white key index it follows
+    const key = document.createElement('div');
+    key.className = 'black-key';
+    if (pressedSemitones.includes(sem)) key.classList.add('pressed');
+    // Position: right edge of the white key it follows, minus half of black key width
+    // Black key width is 60% of white key. Center it between whites.
+    const blackW = whiteW * 0.65;
+    const leftPct = (afterIdx + 1) * whiteW - blackW / 2;
+    key.style.left = leftPct + '%';
+    key.style.width = blackW + '%';
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    key.appendChild(dot);
+    keysDiv.appendChild(key);
+  });
+  
+  return container;
+}
+
+function rootToSemitone(root) {
+  return CHROMATIC.indexOf(root);
+}
+
+function transposeIntervals(intervals, rootSemitone) {
+  return intervals.map(i => (rootSemitone + i) % 12);
+}
+
+function renderChords(root) {
+  const rootIdx = rootToSemitone(root);
+  const container = document.getElementById('chord-container');
+  container.innerHTML = '';
+  
+  CHORD_TYPES.forEach(section => {
+    const label = document.createElement('div');
+    label.className = 'section-label';
+    label.textContent = section.section;
+    container.appendChild(label);
+    
+    const grid = document.createElement('div');
+    grid.className = 'chord-grid';
+    
+    section.chords.forEach(chord => {
+      const card = document.createElement('div');
+      card.className = 'chord-card';
+      
+      // Chord name
+      const name = document.createElement('div');
+      name.className = 'chord-name';
+      // Replace C in alias with current root
+      const displayAlias = chord.alias.replace(/C/g, root);
+      name.textContent = displayAlias.split(',')[0];
+      card.appendChild(name);
+      
+      const alias = document.createElement('div');
+      alias.className = 'chord-alias';
+      alias.textContent = chord.name + (displayAlias.includes(',') ? '  ·  ' + displayAlias.split(',').slice(1).join(',').trim() : '');
+      card.appendChild(alias);
+      
+      const formula = document.createElement('div');
+      formula.className = 'chord-formula';
+      formula.textContent = 'Formula: ' + chord.formula;
+      card.appendChild(formula);
+      
+      // Piano
+      const pressed = transposeIntervals(chord.intervals, rootIdx);
+      card.appendChild(buildPiano(pressed));
+      
+      // Note tags
+      const notesRow = document.createElement('div');
+      notesRow.className = 'notes-row';
+      chord.intervals.forEach((interval, i) => {
+        const semitone = (rootIdx + interval) % 12;
+        const tag = document.createElement('span');
+        tag.className = 'note-tag' + (i === 0 ? ' root-tag' : '');
+        tag.textContent = CHROMATIC[semitone];
+        notesRow.appendChild(tag);
+      });
+      card.appendChild(notesRow);
+      
+      // Vibe
+      const vibe = document.createElement('div');
+      vibe.className = 'chord-vibe';
+      vibe.textContent = chord.vibe;
+      card.appendChild(vibe);
+      
+      grid.appendChild(card);
+    });
+    
+    container.appendChild(grid);
+  });
+}
+
+// Root buttons
+document.querySelectorAll('.root-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.root-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderChords(btn.dataset.root);
+  });
+});
+
+renderChords('C');
+</script>
+</body>
+</html>

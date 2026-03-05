@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jazz Progressions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #080a0f;
+    --surface: #0f1218;
+    --card: #131720;
+    --card2: #161c26;
+    --border: #252d3d;
+    --blue: #4a8fe8;
+    --blue-dim: #2a5a9e;
+    --teal: #3ab8b0;
+    --amber: #e8a84a;
+    --cream: #dde6f0;
+    --muted: #5a6880;
+    --white-key: #eef2f8;
+    --black-key: #0d1018;
+    --pressed-w: #4a8fe8;
+    --pressed-b: #2a5a9e;
+    --active-chord: #1a2535;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+    background-image: radial-gradient(ellipse at 20% 10%, rgba(30,50,90,0.3) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(20,80,80,0.15) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  header h1 span { color: var(--blue); font-style: italic; }
+
+  header p {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Key selector */
+  .key-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    align-items: center;
+  }
+
+  .key-selector span {
+    font-size: 0.68rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-right: 0.4rem;
+  }
+
+  .key-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .key-btn:hover { border-color: var(--blue-dim); color: var(--blue); }
+  .key-btn.active {
+    background: var(--blue);
+    color: var(--bg);
+    border-color: var(--blue);
+    font-weight: 500;
+  }
+
+  /* Progression cards */
+  .prog-section {
+    max-width: 1000px;
+    margin: 0 auto 3rem;
+  }
+
+  .section-header {
+    font-size: 0.68rem;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .prog-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .prog-card:hover { border-color: var(--blue-dim); }
+
+  .prog-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    color: var(--blue);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .prog-tag {
+    font-size: 0.66rem;
+    background: rgba(74,143,232,0.12);
+    border: 1px solid var(--blue-dim);
+    color: var(--blue);
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .prog-examples {
+    font-size: 0.7rem;
+    color: var(--muted);
+    padding: 0 1.4rem 0.3rem;
+    font-style: italic;
+  }
+
+  .prog-desc {
+    font-size: 0.75rem;
+    color: #8899b0;
+    padding: 0 1.4rem 1rem;
+    line-height: 1.6;
+  }
+
+  /* Chord steps row */
+  .steps-row {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0 1.4rem 1.2rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .step {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -14px;
+    top: 38px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    z-index: 10;
+  }
+
+  .step:not(:last-child) { margin-right: 28px; }
+
+  .step-inner {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.8rem 0.8rem 0.6rem;
+    transition: all 0.2s;
+    min-width: 130px;
+  }
+
+  .step.highlighted .step-inner {
+    background: var(--active-chord);
+    border-color: var(--blue);
+    box-shadow: 0 0 18px rgba(74,143,232,0.15);
+  }
+
+  .step-numeral {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .step.highlighted .step-numeral { color: var(--teal); }
+
+  .step-chord-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    color: var(--cream);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .step.highlighted .step-chord-name { color: var(--blue); }
+
+  /* Mini piano */
+  .mini-piano {
+    position: relative;
+    height: 56px;
+    width: 100%;
+  }
+
+  .mini-whites {
+    display: flex;
+    height: 100%;
+    border-radius: 0 0 3px 3px;
+    position: relative;
+  }
+
+  .mw {
+    flex: 1;
+    background: var(--white-key);
+    border: 1px solid #8899aa;
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    position: relative;
+  }
+
+  .mw.p { background: var(--pressed-w); }
+
+  .mw .d {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: none;
+  }
+
+  .mw.p .d { display: block; }
+
+  .mb {
+    position: absolute;
+    top: 0;
+    height: 58%;
+    background: var(--black-key);
+    border-radius: 0 0 2px 2px;
+    z-index: 2;
+    border: 1px solid #000;
+    border-top: none;
+  }
+
+  .mb.p { background: var(--pressed-b); }
+
+  .mb .d {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--cream);
+    display: none;
+  }
+
+  .mb.p .d { display: block; }
+
+  .step-notes {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+    justify-content: center;
+  }
+
+  .step-note {
+    font-size: 0.6rem;
+    color: var(--muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    padding: 0.1rem 0.3rem;
+    border-radius: 2px;
+  }
+
+  .step-note.root { color: var(--blue); border-color: var(--blue-dim); }
+
+  /* Tip bar */
+  .tip-bar {
+    background: rgba(58,184,176,0.06);
+    border: 1px solid rgba(58,184,176,0.2);
+    border-radius: 4px;
+    padding: 0.6rem 1.4rem;
+    font-size: 0.7rem;
+    color: #6ab8b4;
+    line-height: 1.5;
+    margin: 0 1.4rem 1.2rem;
+    font-style: italic;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    margin-top: 2rem;
+  }
+
+  @media (max-width: 600px) {
+    .step-inner { min-width: 110px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jazz <span>Progressions</span></h1>
+  <p>Standard · Click any chord to highlight · Transpose freely</p>
+</header>
+
+<div class="key-selector">
+  <span>Key of</span>
+  <button class="key-btn active" data-root="C">C</button>
+  <button class="key-btn" data-root="Db">D♭</button>
+  <button class="key-btn" data-root="D">D</button>
+  <button class="key-btn" data-root="Eb">E♭</button>
+  <button class="key-btn" data-root="E">E</button>
+  <button class="key-btn" data-root="F">F</button>
+  <button class="key-btn" data-root="Gb">G♭</button>
+  <button class="key-btn" data-root="G">G</button>
+  <button class="key-btn" data-root="Ab">A♭</button>
+  <button class="key-btn" data-root="A">A</button>
+  <button class="key-btn" data-root="Bb">B♭</button>
+  <button class="key-btn" data-root="B">B</button>
+</div>
+
+<div id="main"></div>
+
+<footer>Click a chord to highlight it · Scroll horizontally on longer progressions</footer>
+
+<script>
+const CHROMATIC = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const WHITE_SEM = [0,2,4,5,7,9,11];
+const BLACK_SEM = [1,3,6,8,10];
+// black key: which white index (0-6) it appears after
+const BLACK_AFTER = {1:0, 3:1, 6:3, 8:4, 10:5};
+
+// Chord definitions: intervals in semitones
+const CHORD_DEFS = {
+  'maj7':  { intervals:[0,4,7,11], suffix:'maj7' },
+  '7':     { intervals:[0,4,7,10], suffix:'7' },
+  'm7':    { intervals:[0,3,7,10], suffix:'m7' },
+  'm7b5':  { intervals:[0,3,6,10], suffix:'m7♭5' },
+  'dim7':  { intervals:[0,3,6,9],  suffix:'dim7' },
+  'maj9':  { intervals:[0,4,7,11,14], suffix:'maj9' },
+  '9':     { intervals:[0,4,7,10,14], suffix:'9' },
+  'm9':    { intervals:[0,3,7,10,14], suffix:'m9' },
+  '7b9':   { intervals:[0,4,7,10,13], suffix:'7♭9' },
+  '6':     { intervals:[0,4,7,9],  suffix:'6' },
+  'm6':    { intervals:[0,3,7,9],  suffix:'m6' },
+  'mMaj7': { intervals:[0,3,7,11], suffix:'mMaj7' },
+  '7s11':  { intervals:[0,4,7,10,18], suffix:'7#11' },
+  'sus4':  { intervals:[0,5,7,10], suffix:'7sus4' },
+  'aug7':  { intervals:[0,4,8,10], suffix:'aug7' },
+  'm':     { intervals:[0,3,7],    suffix:'m' },
+};
+
+// Progressions data
+// Each chord step: { root_offset (semitones from key root), type, numeral, label (optional override) }
+const SECTIONS = [
+  {
+    section: "The Cornerstones",
+    progs: [
+      {
+        title: "ii – V – I",
+        tag: "Essential",
+        examples: "\"Autumn Leaves\", \"All The Things You Are\", virtually every jazz standard",
+        desc: "The single most important progression in jazz. The ii chord creates mild tension, V dominant tension, and I resolves it. Learn this in all 12 keys — it appears constantly in standards.",
+        tip: "Practice tip: The ii–V–I is a complete musical sentence. Try adding extensions: iim9 → V13 → Imaj9 for a richer sound.",
+        steps: [
+          { offset:2, type:'m7',   numeral:'ii',  },
+          { offset:7, type:'7',    numeral:'V',   },
+          { offset:0, type:'maj7', numeral:'I',   },
+        ]
+      },
+      {
+        title: "ii – V – i (minor)",
+        tag: "Essential",
+        examples: "\"Autumn Leaves\" (minor section), \"Cry Me a River\"",
+        desc: "The minor key version. The iiø (half-diminished) has a darker flavor than the major ii chord. The V7♭9 adds serious tension before resolving to the minor tonic.",
+        tip: "The V7♭9 chord (e.g. G7♭9 to Cm) has a strong Spanish/flamenco pull. It's one of the most emotionally charged resolutions in jazz.",
+        steps: [
+          { offset:2, type:'m7b5', numeral:'iiø',  },
+          { offset:7, type:'7b9',  numeral:'V7♭9', },
+          { offset:0, type:'mMaj7',numeral:'i',    },
+        ]
+      },
+      {
+        title: "I – VI – ii – V",
+        tag: "Turnaround",
+        examples: "\"I Got Rhythm\" turnaround, \"Blue Moon\", countless standards",
+        desc: "The classic turnaround. Goes from tonic → relative minor → supertonic → dominant, then loops back to I. The engine that keeps jazz standards moving forward.",
+        tip: "The VI chord is often played as a dominant 7th (VI7) instead of minor, creating a secondary dominant pull to ii. Both are correct — the dominant version is more harmonically active.",
+        steps: [
+          { offset:0,  type:'maj7', numeral:'I',   },
+          { offset:9,  type:'7',    numeral:'VI7',  },
+          { offset:2,  type:'m7',   numeral:'ii',  },
+          { offset:7,  type:'7',    numeral:'V',   },
+        ]
+      },
+    ]
+  },
+  {
+    section: "Blues & Soul",
+    progs: [
+      {
+        title: "Jazz Blues (12-bar)",
+        tag: "Blues",
+        examples: "\"Now's The Time\", \"Billie's Bounce\", \"Straight No Chaser\" (Miles Davis)",
+        desc: "The jazz blues differs from rock blues by substituting ii–V's everywhere. Bars 9–10 use a ii–V back to I, and bars 11–12 are a turnaround. Shown here as the first 6 bars (I → IV → I → ii–V).",
+        tip: "The IV7 in bar 5 is what makes the blues sound so soulful. That move from I7 to IV7 is the core of the blues feeling.",
+        steps: [
+          { offset:0, type:'7',    numeral:'I7 (bars 1–4)', },
+          { offset:5, type:'7',    numeral:'IV7 (bars 5–6)', },
+          { offset:0, type:'7',    numeral:'I7 (bars 7–8)', },
+          { offset:2, type:'m7',   numeral:'ii (bar 9)', },
+          { offset:7, type:'7',    numeral:'V (bar 10)', },
+          { offset:0, type:'7',    numeral:'I7 (bars 11–12)', },
+        ]
+      },
+      {
+        title: "Minor Blues",
+        tag: "Blues",
+        examples: "\"Mr. P.C.\" (Coltrane), \"Footprints\" (Wayne Shorter)",
+        desc: "Darker and more intense than major blues. Uses the natural minor scale and emphasizes the iiø–V7♭9–i movement. Wayne Shorter's 'Footprints' is the definitive example — brooding and modal.",
+        tip: "\"Footprints\" is in C minor — try the progression there. The minor blues has a mysterious quality that major blues lacks.",
+        steps: [
+          { offset:0, type:'m7',   numeral:'i (bars 1–4)', },
+          { offset:5, type:'m7',   numeral:'iv (bars 5–6)', },
+          { offset:0, type:'m7',   numeral:'i (bars 7–8)', },
+          { offset:2, type:'m7b5', numeral:'iiø (bar 9)', },
+          { offset:7, type:'7b9',  numeral:'V7♭9 (bar 10)', },
+          { offset:0, type:'m7',   numeral:'i (bars 11–12)', },
+        ]
+      },
+    ]
+  },
+  {
+    section: "Modal & Modern",
+    progs: [
+      {
+        title: "So What / Dorian",
+        tag: "Modal",
+        examples: "\"So What\" (Miles Davis, Kind of Blue), \"Impressions\" (Coltrane)",
+        desc: "Modal jazz at its purest. Stay on one chord (or two, a half step apart) for long stretches, exploring the Dorian mode. No chord changes — melodic and harmonic freedom. Revolutionized jazz in 1959.",
+        tip: "The Dorian mode (like a natural minor but with a raised 6th) gives this its characteristic sound. The move from Dm7 to E♭m7 (a half step up) for the bridge is the only 'change'.",
+        steps: [
+          { offset:2, type:'m7',   numeral:'Dm7 (A section ×16 bars)', },
+          { offset:3, type:'m7',   numeral:'E♭m7 (B section ×8 bars)', },
+          { offset:2, type:'m7',   numeral:'Dm7 (return ×8 bars)', },
+        ]
+      },
+      {
+        title: "Rhythm Changes",
+        tag: "Bebop",
+        examples: "\"I Got Rhythm\", \"Oleo\" (Sonny Rollins), \"Anthropology\" (Parker/Gillespie)",
+        desc: "Based on Gershwin's \"I Got Rhythm\" chord changes. One of bebop's most recycled forms. The A section is a turnaround in I; the B section ('bridge') cycles through dominant 7ths a 5th apart.",
+        tip: "The bridge (III7–VI7–II7–V7) is a circle-of-fifths sequence of dominant chords — each one is a V of the next. Great for practicing chromatic bebop lines.",
+        steps: [
+          { offset:0, type:'maj7', numeral:'I (A section)', },
+          { offset:9, type:'7',    numeral:'VI7', },
+          { offset:2, type:'m7',   numeral:'ii', },
+          { offset:7, type:'7',    numeral:'V7', },
+          { offset:4, type:'7',    numeral:'III7 (bridge)', },
+          { offset:9, type:'7',    numeral:'VI7', },
+          { offset:2, type:'7',    numeral:'II7', },
+          { offset:7, type:'7',    numeral:'V7', },
+        ]
+      },
+      {
+        title: "Coltrane Changes",
+        tag: "Advanced",
+        examples: "\"Giant Steps\", \"Countdown\", \"Central Park West\"",
+        desc: "Coltrane's harmonic innovation: three tonal centers, each a major third apart (dividing the octave equally). The root moves by major thirds and 5ths, cycling through three keys. Notoriously difficult to improvise over.",
+        tip: "The three keys in C are: C, A♭, and E — each a major third (4 semitones) apart. Once you see the symmetry, the progression becomes more logical.",
+        steps: [
+          { offset:0, type:'maj7', numeral:'I (Imaj7)', },
+          { offset:7, type:'7',    numeral:'V of III (V7)', },
+          { offset:4, type:'maj7', numeral:'III (IIImaj7)', },
+          { offset:11,type:'7',    numeral:'V of ♭VI (V7)', },
+          { offset:8, type:'maj7', numeral:'♭VI (♭VImaj7)', },
+          { offset:3, type:'7',    numeral:'V of I (V7)', },
+          { offset:0, type:'maj7', numeral:'I (return)', },
+        ]
+      },
+    ]
+  },
+  {
+    section: "Beautiful Standards",
+    progs: [
+      {
+        title: "Autumn Leaves Changes",
+        tag: "Standard",
+        examples: "\"Autumn Leaves\" (Kosma/Mercer) — one of the most-played jazz standards",
+        desc: "A perfect teaching progression: starts in the relative major, modulates to minor. Uses parallel ii–V–I's in both major and minor keys. Beautiful and inevitable-sounding.",
+        tip: "Notice how the first four chords are ii–V–I in major (G major), then the next four are iiø–V–i in minor (E minor). The two sequences mirror each other perfectly.",
+        steps: [
+          { offset:2, type:'m7',   numeral:'Am7 (ii of G)'},
+          { offset:7, type:'7',    numeral:'D7 (V of G)'},
+          { offset:0, type:'maj7', numeral:'Gmaj7 (I)'},
+          { offset:5, type:'maj7', numeral:'Cmaj7 (IV)'},
+          { offset:11,type:'m7b5', numeral:'F#ø (iiø of Em)'},
+          { offset:4, type:'7b9',  numeral:'B7♭9 (V of Em)'},
+          { offset:9, type:'m7',   numeral:'Em7 (i)'},
+        ]
+      },
+      {
+        title: "Descending Minor Line",
+        tag: "Ballad",
+        examples: "\"Cry Me a River\", \"Misty\" (inner sections), \"Lush Life\"",
+        desc: "A chromatic bass line descends under the chords, creating a sinking, melancholy feeling. Each chord is harmonized over a stepwise descending bass. A hallmark of jazz ballads.",
+        tip: "The chromatic descending bass line (root → major 7 → minor 7 → tritone → dominant) is one of jazz's most iconic sounds. Vocalists love this progression.",
+        steps: [
+          { offset:0, type:'m7',   numeral:'im7'},
+          { offset:0, type:'mMaj7',numeral:'imMaj7'},
+          { offset:0, type:'m7',   numeral:'im7'},
+          { offset:6, type:'7',    numeral:'♭VII7 (#IVdim)'},
+          { offset:7, type:'7',    numeral:'V7'},
+        ]
+      },
+      {
+        title: "I – IV – iii – VI – ii – V – I",
+        tag: "Classic",
+        examples: "\"There Will Never Be Another You\", \"How High the Moon\"",
+        desc: "A longer, graceful diatonic sequence that moves through most of the major key's chords. Every chord except the vii° appears. Sounds inevitable and complete — a full journey home.",
+        tip: "This sequence is all diatonic (in-key) until you optionally sharpen VI to a dominant 7th, which adds pull back to ii. A great 'first chorus' framework for any major key standard.",
+        steps: [
+          { offset:0,  type:'maj7', numeral:'Imaj7'},
+          { offset:5,  type:'maj7', numeral:'IVmaj7'},
+          { offset:4,  type:'m7',   numeral:'iiim7'},
+          { offset:9,  type:'7',    numeral:'VI7'},
+          { offset:2,  type:'m7',   numeral:'iim7'},
+          { offset:7,  type:'7',    numeral:'V7'},
+          { offset:0,  type:'maj7', numeral:'Imaj7'},
+        ]
+      },
+    ]
+  }
+];
+
+function semNote(rootSem, offset) {
+  return (rootSem + offset) % 12;
+}
+
+function buildMiniPiano(pressedSemitones) {
+  const wrap = document.createElement('div');
+  wrap.className = 'mini-piano';
+  const whites = document.createElement('div');
+  whites.className = 'mini-whites';
+
+  const whiteEls = [];
+  WHITE_SEM.forEach(sem => {
+    const k = document.createElement('div');
+    k.className = 'mw' + (pressedSemitones.includes(sem) ? ' p' : '');
+    const d = document.createElement('div');
+    d.className = 'd';
+    k.appendChild(d);
+    whites.appendChild(k);
+    whiteEls.push(k);
+  });
+
+  wrap.appendChild(whites);
+
+  // Black keys via absolute positioning
+  const numWhites = 7;
+  const whiteW = 100 / numWhites;
+  BLACK_SEM.forEach(sem => {
+    const afterIdx = BLACK_AFTER[sem];
+    const k = document.createElement('div');
+    k.className = 'mb' + (pressedSemitones.includes(sem) ? ' p' : '');
+    const blackW = whiteW * 0.65;
+    const leftPct = (afterIdx + 1) * whiteW - blackW / 2;
+    k.style.left = leftPct + '%';
+    k.style.width = blackW + '%';
+    const d = document.createElement('div');
+    d.className = 'd';
+    k.appendChild(d);
+    wrap.appendChild(k);
+  });
+
+  return wrap;
+}
+
+function chordName(rootSem, chordType) {
+  const rootName = CHROMATIC[rootSem];
+  return rootName + CHORD_DEFS[chordType].suffix;
+}
+
+function renderAll(rootName) {
+  const rootSem = CHROMATIC.indexOf(rootName);
+  const container = document.getElementById('main');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(section => {
+    const sec = document.createElement('div');
+    sec.className = 'prog-section';
+
+    const sh = document.createElement('div');
+    sh.className = 'section-header';
+    sh.textContent = section.section;
+    sec.appendChild(sh);
+
+    section.progs.forEach(prog => {
+      const card = document.createElement('div');
+      card.className = 'prog-card';
+
+      // Header
+      const hdr = document.createElement('div');
+      hdr.className = 'prog-header';
+      const title = document.createElement('div');
+      title.className = 'prog-title';
+      title.textContent = prog.title;
+      const tag = document.createElement('div');
+      tag.className = 'prog-tag';
+      tag.textContent = prog.tag;
+      hdr.appendChild(title);
+      hdr.appendChild(tag);
+      card.appendChild(hdr);
+
+      const ex = document.createElement('div');
+      ex.className = 'prog-examples';
+      ex.textContent = '♪ ' + prog.examples;
+      card.appendChild(ex);
+
+      const desc = document.createElement('div');
+      desc.className = 'prog-desc';
+      desc.textContent = prog.desc;
+      card.appendChild(desc);
+
+      // Steps row
+      const stepsRow = document.createElement('div');
+      stepsRow.className = 'steps-row';
+
+      prog.steps.forEach((step, si) => {
+        const chordRootSem = semNote(rootSem, step.offset);
+        const def = CHORD_DEFS[step.type];
+        const pressed = def.intervals.map(i => (chordRootSem + i) % 12);
+        const name = chordName(chordRootSem, step.type);
+
+        const stepEl = document.createElement('div');
+        stepEl.className = 'step';
+
+        const inner = document.createElement('div');
+        inner.className = 'step-inner';
+
+        const numEl = document.createElement('div');
+        numEl.className = 'step-numeral';
+        numEl.textContent = step.numeral;
+        inner.appendChild(numEl);
+
+        const nameEl = document.createElement('div');
+        nameEl.className = 'step-chord-name';
+        nameEl.textContent = name;
+        inner.appendChild(nameEl);
+
+        inner.appendChild(buildMiniPiano(pressed));
+
+        const notesRow = document.createElement('div');
+        notesRow.className = 'step-notes';
+        def.intervals.forEach((interval, ni) => {
+          const nsem = (chordRootSem + interval) % 12;
+          const ntag = document.createElement('span');
+          ntag.className = 'step-note' + (ni === 0 ? ' root' : '');
+          ntag.textContent = CHROMATIC[nsem];
+          notesRow.appendChild(ntag);
+        });
+        inner.appendChild(notesRow);
+
+        stepEl.appendChild(inner);
+        stepsRow.appendChild(stepEl);
+
+        // Click to highlight
+        stepEl.addEventListener('click', () => {
+          const wasHighlighted = stepEl.classList.contains('highlighted');
+          // clear all in this card
+          stepsRow.querySelectorAll('.step').forEach(s => s.classList.remove('highlighted'));
+          if (!wasHighlighted) stepEl.classList.add('highlighted');
+        });
+      });
+
+      card.appendChild(stepsRow);
+
+      // Tip
+      if (prog.tip) {
+        const tip = document.createElement('div');
+        tip.className = 'tip-bar';
+        tip.textContent = '💡 ' + prog.tip;
+        card.appendChild(tip);
+      }
+
+      sec.appendChild(card);
+    });
+
+    container.appendChild(sec);
+  });
+}
+
+document.querySelectorAll('.key-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAll(btn.dataset.root);
+  });
+});
+
+renderAll('C');
+</script>
+</body>
+</html>

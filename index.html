@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jazz Reference · Chords & Progressions</title>
+<meta name="description" content="Interactive jazz chord diagrams and progressions for piano and mandolin. Free, no ads, no signup.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,700;1,400&family=Inconsolata:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:      #0a0a08;
+    --surface: #111110;
+    --border:  #2a2a24;
+    --gold:    #c8992a;
+    --gold2:   #8a6410;
+    --rust:    #a03818;
+    --teal:    #2a8a7a;
+    --cream:   #ede4cc;
+    --muted:   #6a6050;
+    --piano-accent: #4a8fe8;
+    --mando-accent: #c8992a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Inconsolata', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,153,42,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,153,42,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 5rem 2rem 3.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.2rem;
+  }
+
+  .hero h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 1.2rem;
+    max-width: 480px;
+    margin-inline: auto;
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+  }
+
+  /* Staff decoration */
+  .staff {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    margin: 2rem auto 0;
+    width: 120px;
+    opacity: 0.25;
+  }
+  .staff-line {
+    width: 100%;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  /* ── INSTRUMENT SECTIONS ── */
+  .instruments {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .instruments { grid-template-columns: 1fr; }
+  }
+
+  .instrument-col {
+    padding: 3rem 2.5rem 3.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .instrument-col:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  /* Accent bar at top */
+  .instrument-col::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .instrument-col.piano::before { background: var(--piano-accent); }
+  .instrument-col.mando::before { background: var(--mando-accent); }
+
+  .instrument-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+  }
+
+  .instrument-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.01em;
+  }
+
+  .piano .instrument-title { color: var(--piano-accent); }
+  .mando .instrument-title { color: var(--mando-accent); }
+
+  .instrument-sub {
+    font-size: 0.68rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Card links */
+  .card-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .card-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--cream);
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.18s;
+  }
+
+  .piano .card-link::after  { background: rgba(74,143,232,0.05); }
+  .mando .card-link::after  { background: rgba(200,153,42,0.05); }
+
+  .card-link:hover { border-color: var(--border); transform: translateX(3px); }
+  .card-link:hover::after { opacity: 1; }
+  .piano .card-link:hover  { border-color: rgba(74,143,232,0.4); }
+  .mando .card-link:hover  { border-color: rgba(200,153,42,0.4); }
+
+  .card-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    width: 32px;
+    text-align: center;
+  }
+
+  .card-text { flex: 1; min-width: 0; }
+
+  .card-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.15rem;
+  }
+
+  .card-desc {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+  }
+
+  .card-arrow {
+    font-size: 0.8rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: transform 0.18s, color 0.18s;
+  }
+
+  .card-link:hover .card-arrow {
+    transform: translateX(3px);
+    color: var(--cream);
+  }
+
+  /* ── FEATURES ROW ── */
+  .features {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    .features { grid-template-columns: 1fr; }
+  }
+
+  .feature {
+    padding: 1.8rem 2rem;
+    border-right: 1px solid var(--border);
+  }
+
+  .feature:last-child { border-right: none; }
+
+  .feature-icon {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+    opacity: 0.7;
+  }
+
+  .feature-title {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-desc {
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+
+  footer span {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* entry animation */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero, .instrument-col, .feature {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .instrument-col.piano { animation-delay: 0.1s; }
+  .instrument-col.mando { animation-delay: 0.2s; }
+  .feature:nth-child(1)  { animation-delay: 0.25s; }
+  .feature:nth-child(2)  { animation-delay: 0.3s; }
+  .feature:nth-child(3)  { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-eyebrow">Interactive Reference</div>
+  <h1>Jazz <em>Chords</em><br>&amp; Progressions</h1>
+  <p class="hero-desc">Free interactive chord diagrams and standard progressions for piano and mandolin. No ads, no signup, no books to buy.</p>
+  <div class="staff">
+    <div class="staff-line"></div>
+    <div class="staff-line"></div>
+    <div class="staff-line"></div>
+    <div class="staff-line"></div>
+    <div class="staff-line"></div>
+  </div>
+</div>
+
+<div class="instruments">
+
+  <div class="instrument-col piano">
+    <div class="instrument-icon">🎹</div>
+    <div class="instrument-title">Piano</div>
+    <div class="instrument-sub">Interactive keyboard diagrams · All 12 keys</div>
+    <div class="card-links">
+      <a class="card-link" href="jazz-chords.html">
+        <div class="card-icon">🎼</div>
+        <div class="card-text">
+          <div class="card-title">Jazz Chord Reference</div>
+          <div class="card-desc">18 chords · maj7, dom7, m7, dim, extensions &amp; colors · piano key diagrams</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+      <a class="card-link" href="jazz-progressions.html">
+        <div class="card-icon">🔄</div>
+        <div class="card-text">
+          <div class="card-title">Jazz Progressions</div>
+          <div class="card-desc">11 progressions · ii–V–I, blues, Coltrane changes, standards &amp; more</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="instrument-col mando">
+    <div class="instrument-icon">🎸</div>
+    <div class="instrument-title">Mandolin</div>
+    <div class="instrument-sub">Fretboard diagrams · G D A E tuning · Player's view</div>
+    <div class="card-links">
+      <a class="card-link" href="mandolin-jazz-chords.html">
+        <div class="card-icon">🎼</div>
+        <div class="card-text">
+          <div class="card-title">Jazz Chord Reference</div>
+          <div class="card-desc">14 chord types · computed fingerings · tab notation · all 12 keys</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+      <a class="card-link" href="mandolin-jazz-progressions.html">
+        <div class="card-icon">🔄</div>
+        <div class="card-text">
+          <div class="card-title">Jazz Progressions</div>
+          <div class="card-desc">11 progressions · same repertoire as piano · fretboard diagrams per chord</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="features">
+  <div class="feature">
+    <div class="feature-icon">⚙️</div>
+    <div class="feature-title">Transposable</div>
+    <div class="feature-desc">Every chord and progression transposes instantly to any of the 12 keys with a single click.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">📐</div>
+    <div class="feature-title">Computed Fingerings</div>
+    <div class="feature-desc">Mandolin voicings algorithmically verified — every dot placed on the correct fret and string.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🚫</div>
+    <div class="feature-title">No Ads · No Signup</div>
+    <div class="feature-desc">Pure static HTML. Works offline once loaded. Nothing to install, no account needed.</div>
+  </div>
+</div>
+
+<footer>
+  <span>Jazz Reference · Static HTML · Works offline</span>
+  <span>Piano · Mandolin · Chords · Progressions</span>
+</footer>
+
+</body>
+</html>

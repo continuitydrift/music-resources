@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandolin Jazz Progressions</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Fira+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:        #0f0d08;
+    --surface:   #181408;
+    --card:      #201a0c;
+    --card2:     #271f10;
+    --border:    #3d2e14;
+    --amber:     #e0992a;
+    --amber2:    #a86e10;
+    --rust:      #b84418;
+    --teal:      #3aaa90;
+    --cream:     #f0e2c0;
+    --muted:     #7a5e34;
+    --highlight: #1e2a18;
+    --hl-border: #4a7a30;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Fira Mono', monospace;
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+    background-image:
+      radial-gradient(ellipse at 15% 5%, rgba(180,110,20,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 90%, rgba(58,170,144,0.05) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(2rem, 6vw, 3.8rem);
+    color: var(--amber);
+    letter-spacing: 0.03em;
+    text-shadow: 2px 3px 0 rgba(0,0,0,0.6);
+    line-height: 1;
+  }
+
+  header .sub {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    letter-spacing: 0.06em;
+  }
+
+  /* Key selector */
+  .key-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    align-items: center;
+  }
+
+  .key-wrap label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.2rem;
+  }
+
+  .key-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.82rem;
+    padding: 0.38rem 0.72rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.14s;
+  }
+
+  .key-btn:hover { border-color: var(--amber2); color: var(--amber); }
+  .key-btn.active {
+    background: var(--amber);
+    color: var(--bg);
+    border-color: var(--amber);
+    font-weight: 500;
+  }
+
+  /* Section header */
+  .section-label {
+    font-size: 0.65rem;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    max-width: 1080px;
+    margin: 0 auto 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Progression card */
+  .prog-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 0 auto 1.8rem;
+    max-width: 1080px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .prog-card:hover { border-color: var(--amber2); }
+
+  .prog-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 1.1rem 1.4rem 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-title {
+    font-family: 'Abril Fatface', serif;
+    font-size: 1.5rem;
+    color: var(--amber);
+    letter-spacing: 0.02em;
+  }
+
+  .prog-tag {
+    font-size: 0.64rem;
+    background: rgba(224,153,42,0.1);
+    border: 1px solid var(--amber2);
+    color: var(--amber);
+    padding: 0.14rem 0.48rem;
+    border-radius: 2px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .prog-examples {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--muted);
+    padding: 0 1.4rem 0.3rem;
+  }
+
+  .prog-desc {
+    font-size: 0.74rem;
+    color: #9a7e50;
+    padding: 0 1.4rem 0.8rem;
+    line-height: 1.6;
+  }
+
+  /* Chord steps scroll row */
+  .steps-row {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding: 0 1.4rem 1.2rem;
+    align-items: flex-start;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .step {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Arrow between steps */
+  .step:not(:last-child) { margin-right: 30px; }
+  .step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -22px;
+    top: 52px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    z-index: 10;
+  }
+
+  .step-inner {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.7rem 0.7rem 0.5rem;
+    transition: all 0.18s;
+    min-width: 140px;
+  }
+
+  .step.highlighted .step-inner {
+    background: var(--highlight);
+    border-color: var(--hl-border);
+    box-shadow: 0 0 20px rgba(74,122,48,0.15);
+  }
+
+  .step-numeral {
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .step.highlighted .step-numeral { color: var(--teal); }
+
+  .step-chord-name {
+    font-family: 'Abril Fatface', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    text-align: center;
+    margin-bottom: 0.45rem;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+  }
+
+  .step.highlighted .step-chord-name { color: var(--amber); }
+
+  /* Tab strip under mini diagram */
+  .mini-tab {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-top: 0.3rem;
+  }
+
+  .mt-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .mt-str { font-size: 0.55rem; color: var(--muted); }
+  .mt-fret { font-size: 0.7rem; color: var(--cream); min-width: 14px; text-align: center; }
+  .mt-fret.root { color: var(--rust); }
+
+  /* Note tags */
+  .step-notes {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    margin-top: 0.35rem;
+    justify-content: center;
+  }
+
+  .sn-tag {
+    font-size: 0.58rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    padding: 0.1rem 0.28rem;
+    border-radius: 2px;
+  }
+
+  .sn-tag.root { border-color: var(--rust); color: var(--rust); }
+
+  /* Tip */
+  .tip-bar {
+    background: rgba(58,170,144,0.05);
+    border: 1px solid rgba(58,170,144,0.2);
+    border-radius: 4px;
+    padding: 0.6rem 1.4rem;
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    color: #5aaa8a;
+    line-height: 1.5;
+    margin: 0 1.4rem 1.2rem;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 3rem;
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mandolin Jazz Progressions</h1>
+  <div class="sub">Standard progressions · Fretboard diagrams · Transposable</div>
+</header>
+
+<div class="key-wrap">
+  <label>Key</label>
+  <button class="key-btn active" data-root="G">G</button>
+  <button class="key-btn" data-root="C">C</button>
+  <button class="key-btn" data-root="D">D</button>
+  <button class="key-btn" data-root="A">A</button>
+  <button class="key-btn" data-root="Bb">B♭</button>
+  <button class="key-btn" data-root="Eb">E♭</button>
+  <button class="key-btn" data-root="F">F</button>
+  <button class="key-btn" data-root="Db">D♭</button>
+  <button class="key-btn" data-root="Ab">A♭</button>
+  <button class="key-btn" data-root="E">E</button>
+  <button class="key-btn" data-root="Gb">G♭</button>
+  <button class="key-btn" data-root="B">B</button>
+</div>
+
+<div id="main"></div>
+
+<footer>
+  Click any chord to highlight · E string top, G string bottom (player's view)<br>
+  Red dot / red number = root note · Open circle = open string · Scroll right on long progressions
+</footer>
+
+<script>
+// ── Theory ───────────────────────────────────────────────
+const CHROMATIC = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const OPEN = [7, 2, 9, 4]; // G D A E semitones (C=0)
+const STR_NAMES = ['G','D','A','E'];
+
+function noteAt(si, fret) { return (OPEN[si] + fret) % 12; }
+function semOf(name) { return CHROMATIC.indexOf(name); }
+
+// ── Voicing database (all 12 keys) ───────────────────────
+const VOICINGS = {
+  'C':  { maj7:[4,2,3,3], dom7:[3,2,3,3], m7:[3,1,3,3], m7b5:[3,1,3,2], dim7:[2,1,3,2], mMaj7:[4,1,3,3], '6':[2,2,3,3], m6:[2,1,3,3], dom9:[3,2,3,3], maj9:[4,2,3,3], m9:[3,1,3,3], '7b9':[3,2,3,3], sus4:[3,3,3,3] },
+  'Db': { maj7:[5,3,4,4], dom7:[4,3,4,4], m7:[4,2,4,4], m7b5:[4,2,4,3], dim7:[3,2,4,3], mMaj7:[5,2,4,4], '6':[3,3,4,4], m6:[3,2,4,4], dom9:[4,3,4,4], maj9:[5,3,4,4], m9:[4,2,4,4], '7b9':[4,3,4,4], sus4:[4,4,4,4] },
+  'D':  { maj7:[2,0,4,2], dom7:[2,0,3,2], m7:[2,0,3,1], m7b5:[1,0,3,1], dim7:[1,0,2,1], mMaj7:[2,0,4,1], '6':[2,0,2,2], m6:[2,0,2,1], dom9:[2,0,3,2], maj9:[2,0,4,2], m9:[2,0,3,1], '7b9':[2,0,3,2], sus4:[2,0,3,3] },
+  'Eb': { maj7:[0,0,6,6], dom7:[3,1,4,3], m7:[3,1,4,2], m7b5:[2,1,4,2], dim7:[2,1,3,2], mMaj7:[7,4,6,6], '6':[3,1,3,3], m6:[3,1,3,2], dom9:[3,1,4,3], maj9:[0,0,6,6], m9:[3,1,4,2], '7b9':[3,1,4,3], sus4:[3,1,4,4] },
+  'E':  { maj7:[1,1,2,0], dom7:[1,0,2,0], m7:[0,0,2,0], m7b5:[0,0,1,0], dim7:[3,2,4,3], mMaj7:[0,1,2,0], '6':[4,2,4,4], m6:[4,2,4,3], dom9:[1,0,2,0], maj9:[1,1,2,0], m9:[0,0,2,0], '7b9':[1,0,2,0], sus4:[2,0,2,0] },
+  'F':  { maj7:[2,3,3,0], dom7:[2,1,3,1], m7:[1,1,3,1], m7b5:[1,1,2,1], dim7:[1,0,2,1], mMaj7:[1,2,3,1], '6':[2,0,3,1], m6:[1,0,3,1], dom9:[2,1,3,1], maj9:[2,3,3,0], m9:[1,1,3,1], '7b9':[2,1,3,1], sus4:[3,1,3,1] },
+  'Gb': { maj7:[3,3,4,2], dom7:[3,4,4,0], m7:[2,2,4,2], m7b5:[2,2,3,2], dim7:[2,1,3,2], mMaj7:[2,3,4,2], '6':[3,1,4,2], m6:[2,1,4,2], dom9:[3,4,4,0], maj9:[3,3,4,2], m9:[2,2,4,2], '7b9':[3,4,4,0], sus4:[4,4,4,0] },
+  'G':  { maj7:[0,0,2,2], dom7:[0,0,2,1], m7:[0,0,1,1], m7b5:[3,3,4,3], dim7:[3,2,4,3], mMaj7:[0,0,1,2], '6':[0,0,2,0], m6:[0,0,1,0], dom9:[0,0,2,1], maj9:[0,0,2,2], m9:[0,0,1,1], '7b9':[0,0,2,1], sus4:[0,0,3,1] },
+  'Ab': { maj7:[1,1,3,3], dom7:[1,1,3,2], m7:[1,1,2,2], m7b5:[1,0,2,2], dim7:[1,0,2,1], mMaj7:[1,1,2,3], '6':[1,1,3,1], m6:[1,1,2,1], dom9:[1,1,3,2], maj9:[1,1,3,3], m9:[1,1,2,2], '7b9':[1,1,3,2], sus4:[1,1,4,2] },
+  'A':  { maj7:[2,2,4,4], dom7:[2,2,4,3], m7:[2,2,3,3], m7b5:[2,1,3,3], dim7:[2,1,3,2], mMaj7:[2,2,3,4], '6':[2,2,4,2], m6:[2,2,3,2], dom9:[2,2,4,3], maj9:[2,2,4,4], m9:[2,2,3,3], '7b9':[2,2,4,3], sus4:[0,0,0,0] },
+  'Bb': { maj7:[2,0,1,1], dom7:[1,0,1,1], m7:[3,3,4,4], m7b5:[3,2,4,4], dim7:[3,2,4,3], mMaj7:[3,3,4,5], '6':[0,0,1,1], m6:[3,3,4,3], dom9:[1,0,1,1], maj9:[2,0,1,1], m9:[3,3,4,4], '7b9':[1,0,1,1], sus4:[1,1,1,1] },
+  'B':  { maj7:[3,1,2,2], dom7:[2,1,2,2], m7:[2,0,2,2], m7b5:[2,0,2,1], dim7:[1,0,2,1], mMaj7:[3,0,2,2], '6':[1,1,2,2], m6:[1,0,2,2], dom9:[2,1,2,2], maj9:[3,1,2,2], m9:[2,0,2,2], '7b9':[2,1,2,2], sus4:[2,2,2,2] },
+};
+
+// Chord suffix display
+const SUFFIXES = {
+  maj7:'maj7', dom7:'7', m7:'m7', m7b5:'m7♭5', dim7:'dim7', mMaj7:'mΔ7',
+  '6':'6', m6:'m6', dom9:'9', maj9:'maj9', m9:'m9', '7b9':'7♭9', sus4:'7sus4'
+};
+
+// ── SVG mini fretboard (E top, G bottom) ─────────────────
+function makeFretboard(frets, rootSemitone, small) {
+  if (!frets) return `<div style="font-size:0.6rem;color:#5a3a18;text-align:center;padding:8px 0;font-style:italic">voicing N/A</div>`;
+
+  const maxFret = Math.max(...frets);
+  const nonZero = frets.filter(f => f > 0);
+  const minNZ = nonZero.length ? Math.min(...nonZero) : 0;
+  const startFret = maxFret <= 4 ? 0 : (minNZ - 1);
+  const numFrets = 5;
+
+  const W = small ? 130 : 160, H = small ? 78 : 96;
+  const nutX = startFret === 0 ? (small ? 26 : 30) : (small ? 18 : 22);
+  const rMarg = 8;
+  const tMarg = small ? 14 : 16;
+  const bMarg = small ? 12 : 14;
+  const fretW = (W - nutX - rMarg) / numFrets;
+  const strH = (H - tMarg - bMarg) / 3;
+
+  // yFor: si=0 (G) at bottom, si=3 (E) at top
+  function yFor(si) { return tMarg + (3 - si) * strH; }
+
+  let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">`;
+  s += `<rect width="${W}" height="${H}" fill="#100c05" rx="3"/>`;
+
+  // String labels
+  const lx = small ? 8 : 9;
+  for (let si = 0; si < 4; si++) {
+    s += `<text x="${lx}" y="${yFor(si)+3.5}" font-family="Fira Mono,monospace" font-size="${small?7:8}" fill="#6a4a24" text-anchor="middle">${STR_NAMES[si]}</text>`;
+  }
+
+  // Fret position marker dots (above top string)
+  const fretDots = [3,5,7,9];
+  for (const fd of fretDots) {
+    if (fd > startFret && fd <= startFret + numFrets) {
+      const x = nutX + (fd - startFret - 0.5) * fretW;
+      s += `<circle cx="${x}" cy="${tMarg - 6}" r="2" fill="#2e1e08" opacity="0.9"/>`;
+    }
+  }
+
+  // Nut or position label
+  if (startFret === 0) {
+    s += `<rect x="${nutX-3}" y="${tMarg-2}" width="3" height="${3*strH+4}" fill="#e8d080" rx="1"/>`;
+  } else {
+    s += `<text x="${nutX-6}" y="${tMarg+strH*1.5+3}" font-family="Fira Mono,monospace" font-size="${small?6:7}" fill="#5a3a18" text-anchor="middle">${startFret+1}fr</text>`;
+  }
+
+  // Fret lines
+  for (let f = 0; f <= numFrets; f++) {
+    const x = nutX + f * fretW;
+    s += `<line x1="${x}" y1="${tMarg-1}" x2="${x}" y2="${tMarg+3*strH+1}" stroke="#4a3010" stroke-width="${f===0?0.5:0.6}" opacity="0.5"/>`;
+  }
+
+  // Strings (G at bottom = thicker visually)
+  for (let si = 0; si < 4; si++) {
+    const y = yFor(si);
+    const sw = 0.7 + si * 0.15; // E thinnest (si=3→0.7+0.45), G thickest (si=0→0.7)
+    // Actually G is thickest wound string: si=0 should be thickest
+    const sw2 = 1.5 - si * 0.28; // G(si=0)=1.5, D=1.22, A=0.94, E=0.66
+    s += `<line x1="${nutX}" y1="${y}" x2="${W-rMarg}" y2="${y}" stroke="#b88a3a" stroke-width="${sw2}" opacity="0.75"/>`;
+  }
+
+  // Open string circles
+  for (let si = 0; si < 4; si++) {
+    if (frets[si] === 0 && startFret === 0) {
+      const y = yFor(si);
+      const isRoot = noteAt(si, 0) === rootSemitone;
+      s += `<circle cx="${nutX-9}" cy="${y}" r="${small?4:5}" fill="none" stroke="${isRoot?'#b84418':'#6a4a24'}" stroke-width="1.3"/>`;
+      if (isRoot) s += `<circle cx="${nutX-9}" cy="${y}" r="${small?2:2.5}" fill="#b84418"/>`;
+    }
+  }
+
+  // Fingering dots
+  for (let si = 0; si < 4; si++) {
+    const f = frets[si];
+    if (f === 0 || f < startFret+1 || f > startFret+numFrets) continue;
+    const x = nutX + (f - startFret - 0.5) * fretW;
+    const y = yFor(si);
+    const note = noteAt(si, f);
+    const isRoot = note === rootSemitone;
+    const r = small ? 5.5 : 6.5;
+    s += `<circle cx="${x}" cy="${y}" r="${r+1.5}" fill="${isRoot?'#b84418':'#d08820'}" opacity="0.15"/>`;
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${isRoot?'#b84418':'#d08820'}"/>`;
+    s += `<text x="${x}" y="${y+3}" font-family="Fira Mono,monospace" font-size="${small?6.5:7}" fill="${isRoot?'#fff':'#0f0c05'}" text-anchor="middle" font-weight="500">${f}</text>`;
+  }
+
+  s += `</svg>`;
+  return s;
+}
+
+// ── Progression data ──────────────────────────────────────
+// Each step: { offset (semitones from key root), type, numeral }
+const SECTIONS = [
+  {
+    section: "The Cornerstones",
+    progs: [
+      {
+        title: "ii – V – I",
+        tag: "Essential",
+        examples: "\"Autumn Leaves\", \"All The Things You Are\", nearly every jazz standard",
+        desc: "The backbone of jazz harmony. ii creates mild tension, V creates strong dominant tension, I resolves it. Learn this in all 12 keys — it's everywhere.",
+        tip: "Mandolin-friendly keys: G, D, C, A. The ii–V–I in G (Am7→D7→Gmaj7) works beautifully in open position.",
+        steps: [
+          { offset:2,  type:'m7',  numeral:'ii' },
+          { offset:7,  type:'dom7',numeral:'V7' },
+          { offset:0,  type:'maj7',numeral:'I' },
+        ]
+      },
+      {
+        title: "ii – V – i (minor)",
+        tag: "Essential",
+        examples: "\"Autumn Leaves\" (minor section), \"Cry Me a River\", \"Summertime\"",
+        desc: "The minor key version. Half-diminished ii gives a darker flavor; V7♭9 adds serious tension before resolving to the minor tonic. More dramatic than its major counterpart.",
+        tip: "The V7♭9 → im resolution is one of jazz's most emotionally charged moments. In D minor (Em7♭5 → A7♭9 → Dm), it's pure noir.",
+        steps: [
+          { offset:2,  type:'m7b5',numeral:'iiø' },
+          { offset:7,  type:'7b9', numeral:'V7♭9' },
+          { offset:0,  type:'m7',  numeral:'i' },
+        ]
+      },
+      {
+        title: "I – VI – ii – V (Turnaround)",
+        tag: "Turnaround",
+        examples: "\"I Got Rhythm\" turnaround, \"Blue Moon\", \"Heart and Soul\"",
+        desc: "The classic turnaround. Tonic → relative minor (as dominant) → supertonic → dominant, then loops. The engine that keeps standards moving. Endlessly repeatable.",
+        tip: "The VI chord is usually played as a dominant 7th (VI7) rather than minor — e.g. in G: Gmaj7 → E7 → Am7 → D7. The E7 has extra pull to Am.",
+        steps: [
+          { offset:0,  type:'maj7',numeral:'I' },
+          { offset:9,  type:'dom7',numeral:'VI7' },
+          { offset:2,  type:'m7',  numeral:'ii' },
+          { offset:7,  type:'dom7',numeral:'V7' },
+        ]
+      },
+    ]
+  },
+  {
+    section: "Blues",
+    progs: [
+      {
+        title: "Jazz Blues (first 6 bars)",
+        tag: "Blues",
+        examples: "\"Now's The Time\", \"Billie's Bounce\", \"Straight No Chaser\"",
+        desc: "Jazz blues replaces plain repeating chords with ii–V substitutions. The IV7 in bar 5 is the heart of the blues feeling. Shown here: bars 1–4 (I7), bars 5–6 (IV7), then ii–V back home.",
+        tip: "In G, this is: G7 → G7 → G7 → G7 → C7 → C7 → Am7 → D7. The move to C7 in bar 5 is the soul of the blues — lean into it.",
+        steps: [
+          { offset:0,  type:'dom7',numeral:'I7 (bars 1–4)' },
+          { offset:5,  type:'dom7',numeral:'IV7 (bars 5–6)' },
+          { offset:2,  type:'m7',  numeral:'ii (bar 9)' },
+          { offset:7,  type:'dom7',numeral:'V7 (bar 10)' },
+          { offset:0,  type:'dom7',numeral:'I7 (bars 11–12)' },
+        ]
+      },
+      {
+        title: "Minor Blues",
+        tag: "Blues",
+        examples: "\"Mr. P.C.\" (Coltrane), \"Footprints\" (Wayne Shorter)",
+        desc: "Darker and more intense. The iiø–V7♭9–i movement at bars 9–10 is the defining moment. Wayne Shorter's 'Footprints' is the definitive version — brooding and modal.",
+        tip: "\"Footprints\" is in C minor. Try it in D minor on mandolin (open strings are friendly). The Dm7 chord rings out beautifully open.",
+        steps: [
+          { offset:0,  type:'m7',  numeral:'i (bars 1–4)' },
+          { offset:5,  type:'m7',  numeral:'iv (bars 5–6)' },
+          { offset:2,  type:'m7b5',numeral:'iiø (bar 9)' },
+          { offset:7,  type:'7b9', numeral:'V7♭9 (bar 10)' },
+          { offset:0,  type:'m7',  numeral:'i (bars 11–12)' },
+        ]
+      },
+    ]
+  },
+  {
+    section: "Modal & Bebop",
+    progs: [
+      {
+        title: "So What (Dorian vamp)",
+        tag: "Modal",
+        examples: "\"So What\" (Miles Davis, Kind of Blue), \"Impressions\" (Coltrane)",
+        desc: "Two chords. Stay on the minor 7th for 16 bars, move up a half step for 8, return. Pure melodic freedom. Revolutionized jazz in 1959. Perfect for mandolin improvisation.",
+        tip: "On mandolin, Dm7 → E♭m7 is very idiomatic. Hold the Dm7 shape and shift everything up one fret for E♭m7. Simple and effective.",
+        steps: [
+          { offset:2,  type:'m7',  numeral:'Dm7 (16 bars)' },
+          { offset:3,  type:'m7',  numeral:'E♭m7 (8 bars)' },
+          { offset:2,  type:'m7',  numeral:'Dm7 (return)' },
+        ]
+      },
+      {
+        title: "Rhythm Changes (A section)",
+        tag: "Bebop",
+        examples: "\"I Got Rhythm\", \"Oleo\" (Sonny Rollins), \"Anthropology\" (Parker/Gillespie)",
+        desc: "One of bebop's most used forms. The A section is a I–VI–ii–V turnaround; the B section (bridge) is a circle of dominant 7ths each a 5th apart. Shown: full A + bridge.",
+        tip: "The bridge (III7–VI7–II7–V7) is a circle-of-fifths chain of dominants. In G: B7 → E7 → A7 → D7. Great for mandolin since each chord is a familiar dominant shape.",
+        steps: [
+          { offset:0,  type:'maj7',numeral:'I (A section)' },
+          { offset:9,  type:'dom7',numeral:'VI7' },
+          { offset:2,  type:'m7',  numeral:'ii' },
+          { offset:7,  type:'dom7',numeral:'V7' },
+          { offset:4,  type:'dom7',numeral:'III7 (bridge)' },
+          { offset:9,  type:'dom7',numeral:'VI7' },
+          { offset:2,  type:'dom7',numeral:'II7' },
+          { offset:7,  type:'dom7',numeral:'V7' },
+        ]
+      },
+    ]
+  },
+  {
+    section: "Beautiful Standards",
+    progs: [
+      {
+        title: "Autumn Leaves (A section)",
+        tag: "Standard",
+        examples: "\"Autumn Leaves\" (Kosma/Mercer) — one of the most-recorded jazz standards ever",
+        desc: "A perfect teaching progression. The first 4 chords are ii–V–I in the relative major; the next 4 are iiø–V–i in the minor tonic. Mirrors itself perfectly. Sounds inevitable.",
+        tip: "This is often played in G minor / B♭ major on guitar. On mandolin, try it in D minor / F major — all the open strings speak nicely.",
+        steps: [
+          { offset:2,  type:'m7',  numeral:'Am7 (ii of Bb)' },
+          { offset:7,  type:'dom7',numeral:'D7 (V)' },
+          { offset:0,  type:'maj7',numeral:'Gmaj7 (I)' },
+          { offset:5,  type:'maj7',numeral:'Cmaj7 (IV)' },
+          { offset:11, type:'m7b5',numeral:'F#ø (iiø)' },
+          { offset:4,  type:'7b9', numeral:'B7♭9 (V)' },
+          { offset:9,  type:'m7',  numeral:'Em7 (i)' },
+        ]
+      },
+      {
+        title: "Descending Minor Bass Line",
+        tag: "Ballad",
+        examples: "\"Cry Me a River\", \"Lush Life\", \"My Funny Valentine\" (inner bars)",
+        desc: "A chromatic bass line descends under sustained harmonies, creating a sinking, cinematic feel. Each chord is harmonized over the next step down. A hallmark of the jazz ballad.",
+        tip: "The chromatic motion makes this feel like it's always resolving but never quite arriving — pure melancholy. Beautiful on mandolin played slowly.",
+        steps: [
+          { offset:0,  type:'m7',   numeral:'im7' },
+          { offset:0,  type:'mMaj7',numeral:'imΔ7' },
+          { offset:0,  type:'m7',   numeral:'im7' },
+          { offset:7,  type:'dom7', numeral:'V7' },
+          { offset:0,  type:'m7',   numeral:'im (resolve)' },
+        ]
+      },
+      {
+        title: "I – IV – iii – VI – ii – V – I",
+        tag: "Classic",
+        examples: "\"There Will Never Be Another You\", \"How High the Moon\"",
+        desc: "A graceful diatonic journey through most of the major key's chords. Every step feels inevitable. A 'full sentence' of jazz harmony that ends back where it began.",
+        tip: "In G major: Gmaj7 → Cmaj7 → Bm7 → E7 → Am7 → D7 → Gmaj7. All comfortable shapes on mandolin. A lovely first progression to memorize completely.",
+        steps: [
+          { offset:0,  type:'maj7',numeral:'I' },
+          { offset:5,  type:'maj7',numeral:'IV' },
+          { offset:4,  type:'m7',  numeral:'iii' },
+          { offset:9,  type:'dom7',numeral:'VI7' },
+          { offset:2,  type:'m7',  numeral:'ii' },
+          { offset:7,  type:'dom7',numeral:'V7' },
+          { offset:0,  type:'maj7',numeral:'I' },
+        ]
+      },
+    ]
+  }
+];
+
+// ── Chord name helper ─────────────────────────────────────
+function chordName(rootNote, type) {
+  return rootNote + (SUFFIXES[type] || type);
+}
+
+// ── Render ────────────────────────────────────────────────
+function renderAll(keyRoot) {
+  const keyRootSem = semOf(keyRoot);
+  const container = document.getElementById('main');
+  container.innerHTML = '';
+
+  SECTIONS.forEach(section => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section-label';
+    secEl.style.cssText = 'max-width:1080px;margin:0 auto 1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:0.65rem;color:var(--teal);text-transform:uppercase;letter-spacing:0.2em';
+    secEl.textContent = section.section;
+    container.appendChild(secEl);
+
+    section.progs.forEach(prog => {
+      const card = document.createElement('div');
+      card.className = 'prog-card';
+
+      // Header
+      const hdr = document.createElement('div');
+      hdr.className = 'prog-header';
+      const titleEl = document.createElement('div');
+      titleEl.className = 'prog-title';
+      titleEl.textContent = prog.title;
+      const tagEl = document.createElement('div');
+      tagEl.className = 'prog-tag';
+      tagEl.textContent = prog.tag;
+      hdr.appendChild(titleEl);
+      hdr.appendChild(tagEl);
+      card.appendChild(hdr);
+
+      const exEl = document.createElement('div');
+      exEl.className = 'prog-examples';
+      exEl.textContent = '♪ ' + prog.examples;
+      card.appendChild(exEl);
+
+      const descEl = document.createElement('div');
+      descEl.className = 'prog-desc';
+      descEl.textContent = prog.desc;
+      card.appendChild(descEl);
+
+      // Steps
+      const stepsRow = document.createElement('div');
+      stepsRow.className = 'steps-row';
+
+      prog.steps.forEach((step) => {
+        const chordRootSem = (keyRootSem + step.offset) % 12;
+        const chordRootName = CHROMATIC[chordRootSem];
+        const frets = (VOICINGS[chordRootName] || {})[step.type] || null;
+        const name = chordName(chordRootName, step.type);
+
+        const stepEl = document.createElement('div');
+        stepEl.className = 'step';
+
+        const inner = document.createElement('div');
+        inner.className = 'step-inner';
+
+        // Numeral
+        const numEl = document.createElement('div');
+        numEl.className = 'step-numeral';
+        numEl.textContent = step.numeral;
+        inner.appendChild(numEl);
+
+        // Chord name
+        const nameEl = document.createElement('div');
+        nameEl.className = 'step-chord-name';
+        nameEl.textContent = name;
+        inner.appendChild(nameEl);
+
+        // Fretboard
+        const fbDiv = document.createElement('div');
+        fbDiv.innerHTML = makeFretboard(frets, chordRootSem, true);
+        inner.appendChild(fbDiv);
+
+        // Tab strip
+        if (frets) {
+          const tabDiv = document.createElement('div');
+          tabDiv.className = 'mini-tab';
+          STR_NAMES.forEach((sn, si) => {
+            const col = document.createElement('div');
+            col.className = 'mt-col';
+            const snEl = document.createElement('div');
+            snEl.className = 'mt-str';
+            snEl.textContent = sn;
+            const fEl = document.createElement('div');
+            const isRoot = noteAt(si, frets[si]) === chordRootSem;
+            fEl.className = 'mt-fret' + (isRoot ? ' root' : '');
+            fEl.textContent = frets[si];
+            col.appendChild(snEl);
+            col.appendChild(fEl);
+            tabDiv.appendChild(col);
+          });
+          inner.appendChild(tabDiv);
+        }
+
+        // Note tags
+        const notesDiv = document.createElement('div');
+        notesDiv.className = 'step-notes';
+        if (frets) {
+          const seen = new Set();
+          frets.forEach((f, si) => {
+            const n = CHROMATIC[noteAt(si, f)];
+            if (!seen.has(n)) {
+              seen.add(n);
+              const t = document.createElement('span');
+              const isRoot = noteAt(si, f) === chordRootSem;
+              t.className = 'sn-tag' + (isRoot ? ' root' : '');
+              t.textContent = n;
+              notesDiv.appendChild(t);
+            }
+          });
+        }
+        inner.appendChild(notesDiv);
+
+        stepEl.appendChild(inner);
+        stepsRow.appendChild(stepEl);
+
+        // Click to highlight
+        stepEl.addEventListener('click', () => {
+          const was = stepEl.classList.contains('highlighted');
+          stepsRow.querySelectorAll('.step').forEach(s => s.classList.remove('highlighted'));
+          if (!was) stepEl.classList.add('highlighted');
+        });
+      });
+
+      card.appendChild(stepsRow);
+
+      // Tip
+      if (prog.tip) {
+        const tipEl = document.createElement('div');
+        tipEl.className = 'tip-bar';
+        tipEl.textContent = '💡 ' + prog.tip;
+        card.appendChild(tipEl);
+      }
+
+      container.appendChild(card);
+    });
+  });
+}
+
+// Key buttons
+document.querySelectorAll('.key-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAll(btn.dataset.root);
+  });
+});
+
+renderAll('G');
+</script>
+</body>
+</html>

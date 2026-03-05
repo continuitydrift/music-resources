@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mandolin Jazz Chords</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Fira+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg:       #1c1108;
+    --surface:  #251808;
+    --card:     #2d1f0d;
+    --card2:    #332412;
+    --border:   #4a3018;
+    --amber:    #e8a030;
+    --amber2:   #c47a10;
+    --rust:     #c85020;
+    --cream:    #f5e8cc;
+    --muted:    #8a6a40;
+    --string-color: #c8a050;
+    --dot-fill:  #e8a030;
+    --dot-root:  #c85020;
+    --nut:      #f5dfa0;
+    --wood:     #5a3510;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Fira Mono', monospace;
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(90,53,16,0.04) 0px, transparent 1px, transparent 40px),
+      radial-gradient(ellipse at 50% 0%, rgba(232,160,48,0.07) 0%, transparent 60%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    color: var(--amber);
+    letter-spacing: 0.03em;
+    line-height: 1;
+    text-shadow: 2px 3px 0 rgba(0,0,0,0.5);
+  }
+
+  header .sub {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    letter-spacing: 0.06em;
+  }
+
+  .tuning-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .tuning-bar span {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .string-badge {
+    font-size: 0.72rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--amber);
+    background: rgba(232,160,48,0.08);
+  }
+
+  /* Root selector */
+  .root-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    align-items: center;
+  }
+
+  .root-wrap label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.2rem;
+  }
+
+  .root-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    font-family: 'Fira Mono', monospace;
+    font-size: 0.82rem;
+    padding: 0.38rem 0.72rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.14s;
+  }
+
+  .root-btn:hover { border-color: var(--amber2); color: var(--amber); }
+  .root-btn.active {
+    background: var(--amber);
+    color: var(--bg);
+    border-color: var(--amber);
+    font-weight: 500;
+  }
+
+  /* Section */
+  .section-label {
+    font-size: 0.65rem;
+    color: var(--rust);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    max-width: 1080px;
+    margin: 0 auto 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .chord-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.2rem;
+    max-width: 1080px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .chord-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .chord-card:hover {
+    border-color: var(--amber2);
+    box-shadow: 0 4px 20px rgba(200,120,20,0.1);
+  }
+
+  .chord-name {
+    font-family: 'Abril Fatface', serif;
+    font-size: 1.35rem;
+    color: var(--amber);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+  }
+
+  .chord-full {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 0.15rem;
+  }
+
+  .chord-formula {
+    font-size: 0.62rem;
+    color: var(--amber2);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.9rem;
+  }
+
+  /* === FRETBOARD DIAGRAM === */
+  .fretboard {
+    position: relative;
+    width: 100%;
+    margin-bottom: 0.8rem;
+  }
+
+  .fb-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* No voicing notice */
+  .no-voicing {
+    background: rgba(0,0,0,0.3);
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    padding: 0.6rem;
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 0.8rem;
+  }
+
+  /* Tab notation below diagram */
+  .tab-notation {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .tab-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-right: 2px;
+  }
+
+  .tab-string {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .tab-str-name {
+    font-size: 0.58rem;
+    color: var(--muted);
+  }
+
+  .tab-fret {
+    font-size: 0.78rem;
+    color: var(--cream);
+    font-weight: 500;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .tab-fret.is-root { color: var(--rust); }
+
+  /* Note tags */
+  .notes-row {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .note-tag {
+    font-size: 0.62rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--cream);
+    padding: 0.12rem 0.35rem;
+    border-radius: 3px;
+  }
+
+  .note-tag.root { border-color: var(--rust); color: var(--rust); }
+
+  .chord-vibe {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 3rem;
+    letter-spacing: 0.08em;
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mandolin Jazz</h1>
+  <div class="sub">Chord Diagrams &amp; Fingerings</div>
+  <div class="tuning-bar">
+    <span>Tuning (low → high):</span>
+    <span class="string-badge">G</span>
+    <span class="string-badge">D</span>
+    <span class="string-badge">A</span>
+    <span class="string-badge">E</span>
+    <span style="font-size:0.75rem;color:var(--muted);font-style:italic">(diagram: E top → G bottom, player's view)</span>
+  </div>
+</header>
+
+<div class="root-wrap">
+  <label>Root Note</label>
+  <button class="root-btn active" data-root="C">C</button>
+  <button class="root-btn" data-root="Db">D♭</button>
+  <button class="root-btn" data-root="D">D</button>
+  <button class="root-btn" data-root="Eb">E♭</button>
+  <button class="root-btn" data-root="E">E</button>
+  <button class="root-btn" data-root="F">F</button>
+  <button class="root-btn" data-root="Gb">G♭</button>
+  <button class="root-btn" data-root="G">G</button>
+  <button class="root-btn" data-root="Ab">A♭</button>
+  <button class="root-btn" data-root="A">A</button>
+  <button class="root-btn" data-root="Bb">B♭</button>
+  <button class="root-btn" data-root="B">B</button>
+</div>
+
+<div id="main"></div>
+
+<footer>
+  Fret dots shown from nut (left) · Red dot = root note · Numbers = fret position<br>
+  E string at top · G string at bottom (player's eye view) · Open circle = open string · Fret 0 = open
+</footer>
+
+<script>
+// ── Music theory ──────────────────────────────────────────
+const CHROMATIC = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const OPEN = [7, 2, 9, 4]; // G D A E in semitones (C=0)
+const STRING_NAMES = ['G','D','A','E'];
+
+function noteAt(si, fret) { return (OPEN[si] + fret) % 12; }
+
+// ── Voicing database (computed via Python algorithm) ──────
+// frets: [G-string, D-string, A-string, E-string]
+const VOICINGS = {
+  'C':  { maj7:[4,2,3,3], dom7:[3,2,3,3], m7:[3,1,3,3], m7b5:[3,1,3,2], dim7:[2,1,3,2], mMaj7:[4,1,3,3], '6':[2,2,3,3], m6:[2,1,3,3], dom9:[3,2,3,3], maj9:[4,2,3,3], m9:[3,1,3,3], '7b9':[3,2,3,3], sus4:[3,3,3,3] },
+  'Db': { maj7:[5,3,4,4], dom7:[4,3,4,4], m7:[4,2,4,4], m7b5:[4,2,4,3], dim7:[3,2,4,3], mMaj7:[5,2,4,4], '6':[3,3,4,4], m6:[3,2,4,4], dom9:[4,3,4,4], maj9:[5,3,4,4], m9:[4,2,4,4], '7b9':[4,3,4,4], sus4:[4,4,4,4] },
+  'D':  { maj7:[2,0,4,2], dom7:[2,0,3,2], m7:[2,0,3,1], m7b5:[1,0,3,1], dim7:[1,0,2,1], mMaj7:[2,0,4,1], '6':[2,0,2,2], m6:[2,0,2,1], dom9:[2,0,3,2], maj9:[2,0,4,2], m9:[2,0,3,1], '7b9':[2,0,3,2], sus4:[2,0,3,3] },
+  'Eb': { maj7:[0,0,6,6], dom7:[3,1,4,3], m7:[3,1,4,2], m7b5:[2,1,4,2], dim7:[2,1,3,2], mMaj7:[7,4,6,6], '6':[3,1,3,3], m6:[3,1,3,2], dom9:[3,1,4,3], maj9:[0,0,6,6], m9:[3,1,4,2], '7b9':[3,1,4,3], sus4:[3,1,4,4] },
+  'E':  { maj7:[1,1,2,0], dom7:[1,0,2,0], m7:[0,0,2,0], m7b5:[0,0,1,0], dim7:[3,2,4,3], mMaj7:[0,1,2,0], '6':[4,2,4,4], m6:[4,2,4,3], dom9:[1,0,2,0], maj9:[1,1,2,0], m9:[0,0,2,0], '7b9':[1,0,2,0], sus4:[2,0,2,0] },
+  'F':  { maj7:[2,3,3,0], dom7:[2,1,3,1], m7:[1,1,3,1], m7b5:[1,1,2,1], dim7:[1,0,2,1], mMaj7:[1,2,3,1], '6':[2,0,3,1], m6:[1,0,3,1], dom9:[2,1,3,1], maj9:[2,3,3,0], m9:[1,1,3,1], '7b9':[2,1,3,1], sus4:[3,1,3,1] },
+  'Gb': { maj7:[3,3,4,2], dom7:[3,4,4,0], m7:[2,2,4,2], m7b5:[2,2,3,2], dim7:[2,1,3,2], mMaj7:[2,3,4,2], '6':[3,1,4,2], m6:[2,1,4,2], dom9:[3,4,4,0], maj9:[3,3,4,2], m9:[2,2,4,2], '7b9':[3,4,4,0], sus4:[4,4,4,0] },
+  'G':  { maj7:[0,0,2,2], dom7:[0,0,2,1], m7:[0,0,1,1], m7b5:[3,3,4,3], dim7:[3,2,4,3], mMaj7:[0,0,1,2], '6':[0,0,2,0], m6:[0,0,1,0], dom9:[0,0,2,1], maj9:[0,0,2,2], m9:[0,0,1,1], '7b9':[0,0,2,1], sus4:[0,0,3,1] },
+  'Ab': { maj7:[1,1,3,3], dom7:[1,1,3,2], m7:[1,1,2,2], m7b5:[1,0,2,2], dim7:[1,0,2,1], mMaj7:[1,1,2,3], '6':[1,1,3,1], m6:[1,1,2,1], dom9:[1,1,3,2], maj9:[1,1,3,3], m9:[1,1,2,2], '7b9':[1,1,3,2], sus4:[1,1,4,2] },
+  'A':  { maj7:[2,2,4,4], dom7:[2,2,4,3], m7:[2,2,3,3], m7b5:[2,1,3,3], dim7:[2,1,3,2], mMaj7:[2,2,3,4], '6':[2,2,4,2], m6:[2,2,3,2], dom9:[2,2,4,3], maj9:[2,2,4,4], m9:[2,2,3,3], '7b9':[2,2,4,3], sus4:[0,0,0,0] },
+  'Bb': { maj7:[2,0,1,1], dom7:[1,0,1,1], m7:[3,3,4,4], m7b5:[3,2,4,4], dim7:[3,2,4,3], mMaj7:[3,3,4,5], '6':[0,0,1,1], m6:[3,3,4,3], dom9:[1,0,1,1], maj9:[2,0,1,1], m9:[3,3,4,4], '7b9':[1,0,1,1], sus4:[1,1,1,1] },
+  'B':  { maj7:[3,1,2,2], dom7:[2,1,2,2], m7:[2,0,2,2], m7b5:[2,0,2,1], dim7:[1,0,2,1], mMaj7:[3,0,2,2], '6':[1,1,2,2], m6:[1,0,2,2], dom9:[2,1,2,2], maj9:[3,1,2,2], m9:[2,0,2,2], '7b9':[2,1,2,2], sus4:[2,2,2,2] },
+};
+
+// Override Gmaj7 with cleaner open voicing
+VOICINGS['G']['maj7'] = [0, 2, 2, 0]; // G E B E -> Gmaj7 ✓
+
+// ── Chord definitions ─────────────────────────────────────
+const CHORD_DATA = [
+  {
+    section: "Essential Jazz Chords",
+    chords: [
+      { key:'maj7',  suffix:'maj7', full:'Major 7th',        formula:'1 – 3 – 5 – 7',        intervals:[0,4,7,11], vibe:'Lush and sophisticated. The tonic chord of jazz ballads.' },
+      { key:'dom7',  suffix:'7',    full:'Dominant 7th',     formula:'1 – 3 – 5 – ♭7',       intervals:[0,4,7,10], vibe:'Bluesy tension. Essential for blues and V chord resolutions.' },
+      { key:'m7',    suffix:'m7',   full:'Minor 7th',        formula:'1 – ♭3 – 5 – ♭7',      intervals:[0,3,7,10], vibe:'Smooth and cool. The ii chord in ii–V–I progressions.' },
+      { key:'m7b5',  suffix:'m7♭5', full:'Half-Diminished',  formula:'1 – ♭3 – ♭5 – ♭7',     intervals:[0,3,6,10], vibe:'Dark tension. The ii chord in minor ii–V–i.' },
+      { key:'dim7',  suffix:'dim7', full:'Diminished 7th',   formula:'1 – ♭3 – ♭5 – ♭♭7',    intervals:[0,3,6,9],  vibe:'Maximum tension. Symmetrical — repeats every 3 semitones.' },
+      { key:'mMaj7', suffix:'mΔ7',  full:'Minor Major 7th',  formula:'1 – ♭3 – 5 – 7',        intervals:[0,3,7,11], vibe:'Cinematic and mysterious. Coltrane, spy films, intrigue.' },
+    ]
+  },
+  {
+    section: "Extended & Altered",
+    chords: [
+      { key:'dom9',  suffix:'9',    full:'Dominant 9th',     formula:'1 – 3 – 5 – ♭7 – 9',   intervals:[0,4,7,10,14], vibe:'Shell voicing (4 strings can\'t fit all 5 notes). Implies the 9th — add it melodically.' },
+      { key:'maj9',  suffix:'maj9', full:'Major 9th',        formula:'1 – 3 – 5 – 7 – 9',    intervals:[0,4,7,11,14], vibe:'Shell voicing. The maj7 shape implies the 9th when you play the root note in your melody.' },
+      { key:'m9',    suffix:'m9',   full:'Minor 9th',        formula:'1 – ♭3 – 5 – ♭7 – 9',  intervals:[0,3,7,10,14], vibe:'Shell voicing. The m7 shape is the practical chord — add the 9th as a passing note or in melody.' },
+      { key:'7b9',   suffix:'7♭9',  full:'Dominant 7♭9',     formula:'1 – 3 – 5 – ♭7 – ♭9',  intervals:[0,4,7,10,13], vibe:'Shell voicing (dom7 shape). The ♭9 lives in the melody or is implied. Intense bebop/flamenco tension.' },
+      { key:'sus4',  suffix:'7sus4',full:'Suspended 4th',    formula:'1 – 4 – 5 – ♭7',        intervals:[0,5,7,10], vibe:'Quartal, open, ambiguous. Herbie Hancock sound.' },
+      { key:'aug7',  suffix:'aug7', full:'Augmented 7th',    formula:'1 – 3 – #5 – ♭7',       intervals:[0,4,8,10], vibe:'Unstable, ascending pull. Passing or substitute dominant.' },
+    ]
+  },
+  {
+    section: "Colors & Substitutes",
+    chords: [
+      { key:'6',     suffix:'6',    full:'Major 6th',        formula:'1 – 3 – 5 – 6',         intervals:[0,4,7,9],  vibe:'Bright tonic alternative to maj7. Friendly and resolved.' },
+      { key:'m6',    suffix:'m6',   full:'Minor 6th',        formula:'1 – ♭3 – 5 – 6',        intervals:[0,3,7,9],  vibe:'Exotic minor color. Tango, noir, minor tonic voicing.' },
+    ]
+  }
+];
+
+// ── SVG fretboard renderer ────────────────────────────────
+function makeFretboard(frets, rootSem) {
+  // frets: [G,D,A,E] or null
+  // Layout: horizontal diagram, 4 strings left=low(G), right=high(E)
+  // 5 frets shown, strings are horizontal lines, frets are vertical
+
+  if (!frets) return null;
+
+  const maxFret = Math.max(...frets);
+  const minNonZero = Math.min(...frets.filter(f => f > 0));
+  const startFret = maxFret <= 4 ? 0 : (minNonZero - 1);
+  const numFrets = 5;
+  const endFret = startFret + numFrets;
+
+  // SVG dimensions
+  const W = 200, H = 110;
+  const nutX = startFret === 0 ? 34 : 24;
+  const rightMargin = 12;
+  const topMargin = 22;
+  const bottomMargin = 18;
+  const fretW = (W - nutX - rightMargin) / numFrets;
+  const strH = (H - topMargin - bottomMargin) / 3;
+
+  let svg = `<svg class="fb-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+  // Background
+  svg += `<rect width="${W}" height="${H}" fill="#1a1008" rx="4"/>`;
+
+  // String order: E at top (si=3 drawn at row 0), G at bottom (si=0 drawn at row 3)
+  // yFor(si) maps string index to vertical position — flipped so G=bottom, E=top
+  function yFor(si) { return topMargin + (3 - si) * strH; }
+
+  // String labels (left side) — E top, G bottom
+  const strLabels = ['G','D','A','E'];
+  for (let si = 0; si < 4; si++) {
+    const y = yFor(si);
+    svg += `<text x="10" y="${y+4}" font-family="Fira Mono,monospace" font-size="9" fill="#7a5a30" text-anchor="middle">${strLabels[si]}</text>`;
+  }
+
+  // Nut (thick bar if starting at fret 0)
+  if (startFret === 0) {
+    svg += `<rect x="${nutX-4}" y="${topMargin-2}" width="4" height="${3*strH+4}" fill="#f0d890" rx="1"/>`;
+  } else {
+    // Position marker text
+    svg += `<text x="${nutX - 8}" y="${topMargin + strH * 1.5 + 4}" font-family="Fira Mono,monospace" font-size="8" fill="#6a4a28" text-anchor="middle">${startFret+1}fr</text>`;
+  }
+
+  // Fret lines (vertical)
+  for (let f = 0; f <= numFrets; f++) {
+    const x = nutX + f * fretW;
+    const opacity = f === 0 ? 0.15 : 0.35;
+    svg += `<line x1="${x}" y1="${topMargin-2}" x2="${x}" y2="${topMargin + 3*strH + 2}" stroke="#6a4a28" stroke-width="${f===0?1:0.8}" opacity="${opacity}"/>`;
+  }
+
+  // Strings (horizontal lines) — G (si=0) at bottom = thickest
+  for (let si = 0; si < 4; si++) {
+    const y = yFor(si);
+    const thickness = 1 + si * 0.4; // G (si=0) thinnest line visually but wound, E (si=3) thinnest gauge
+    // Actually G is lowest/thickest wound string → more visual weight at bottom
+    const strokeW = 0.9 + (si === 0 ? 0.7 : si === 1 ? 0.4 : si === 2 ? 0.2 : 0);
+    svg += `<line x1="${nutX}" y1="${y}" x2="${W - rightMargin}" y2="${y}" stroke="#c8a050" stroke-width="${strokeW}" opacity="0.75"/>`;
+  }
+
+  // Fret position dots (standard fret markers at 3,5,7,9,12) — placed above top string
+  const fretDots = [3,5,7,9];
+  for (const fd of fretDots) {
+    if (fd > startFret && fd <= endFret) {
+      const x = nutX + (fd - startFret - 0.5) * fretW;
+      svg += `<circle cx="${x}" cy="${topMargin - 10}" r="2.5" fill="#3a2810" opacity="0.8"/>`;
+    }
+  }
+
+  // Open string indicators (small circle to left of nut)
+  for (let si = 0; si < 4; si++) {
+    if (frets[si] === 0 && startFret === 0) {
+      const y = yFor(si);
+      const isRoot = noteAt(si, 0) === rootSem;
+      svg += `<circle cx="${nutX - 10}" cy="${y}" r="5" fill="none" stroke="${isRoot ? '#c85020' : '#8a6a40'}" stroke-width="1.5"/>`;
+      if (isRoot) {
+        svg += `<circle cx="${nutX - 10}" cy="${y}" r="2.5" fill="#c85020"/>`;
+      }
+    }
+  }
+
+  // Fingering dots
+  for (let si = 0; si < 4; si++) {
+    const f = frets[si];
+    if (f === 0) continue; // open string handled above
+    if (f < startFret + 1 || f > endFret) continue;
+
+    const x = nutX + (f - startFret - 0.5) * fretW;
+    const y = yFor(si);
+    const note = noteAt(si, f);
+    const isRoot = note === rootSem;
+
+    // Dot glow
+    svg += `<circle cx="${x}" cy="${y}" r="8" fill="${isRoot ? '#c85020' : '#e8a030'}" opacity="0.15"/>`;
+    // Main dot
+    svg += `<circle cx="${x}" cy="${y}" r="6.5" fill="${isRoot ? '#c85020' : '#e8a030'}"/>`;
+    // Fret number inside
+    svg += `<text x="${x}" y="${y+3.5}" font-family="Fira Mono,monospace" font-size="7.5" fill="${isRoot ? '#fff' : '#1c1108'}" text-anchor="middle" font-weight="500">${f}</text>`;
+  }
+
+  svg += `</svg>`;
+  return svg;
+}
+
+// ── Render ────────────────────────────────────────────────
+function rootSem(rootName) { return CHROMATIC.indexOf(rootName); }
+
+function noteNames(frets, rootName) {
+  const rs = rootSem(rootName);
+  return frets.map((f, si) => ({
+    name: CHROMATIC[noteAt(si, f)],
+    isRoot: noteAt(si, f) === rs
+  }));
+}
+
+function renderAll(root) {
+  const rs = rootSem(root);
+  const voicings = VOICINGS[root];
+  const container = document.getElementById('main');
+  container.innerHTML = '';
+
+  CHORD_DATA.forEach(section => {
+    const secLabel = document.createElement('div');
+    secLabel.className = 'section-label';
+    secLabel.textContent = section.section;
+    container.appendChild(secLabel);
+
+    const grid = document.createElement('div');
+    grid.className = 'chord-grid';
+
+    section.chords.forEach(ch => {
+      const frets = voicings[ch.key];
+      const card = document.createElement('div');
+      card.className = 'chord-card';
+
+      // Name
+      const nameEl = document.createElement('div');
+      nameEl.className = 'chord-name';
+      nameEl.textContent = root + ch.suffix;
+      card.appendChild(nameEl);
+
+      const fullEl = document.createElement('div');
+      fullEl.className = 'chord-full';
+      fullEl.textContent = ch.full;
+      card.appendChild(fullEl);
+
+      const formulaEl = document.createElement('div');
+      formulaEl.className = 'chord-formula';
+      formulaEl.textContent = 'Formula: ' + ch.formula;
+      card.appendChild(formulaEl);
+
+      // Fretboard
+      if (frets) {
+        const fbDiv = document.createElement('div');
+        fbDiv.className = 'fretboard';
+        fbDiv.innerHTML = makeFretboard(frets, rs);
+        card.appendChild(fbDiv);
+
+        // Tab notation
+        const tabRow = document.createElement('div');
+        tabRow.className = 'tab-notation';
+        const tabLbl = document.createElement('span');
+        tabLbl.className = 'tab-label';
+        tabLbl.textContent = 'Tab:';
+        tabRow.appendChild(tabLbl);
+
+        ['G','D','A','E'].forEach((sn, si) => {
+          const col = document.createElement('div');
+          col.className = 'tab-string';
+          const snEl = document.createElement('div');
+          snEl.className = 'tab-str-name';
+          snEl.textContent = sn;
+          const fEl = document.createElement('div');
+          fEl.className = 'tab-fret' + (noteAt(si, frets[si]) === rs ? ' is-root' : '');
+          fEl.textContent = frets[si];
+          col.appendChild(snEl);
+          col.appendChild(fEl);
+          tabRow.appendChild(col);
+        });
+        card.appendChild(tabRow);
+
+        // Note names
+        const notesRow = document.createElement('div');
+        notesRow.className = 'notes-row';
+        const nns = noteNames(frets, root);
+        // Unique notes in chord order
+        const seen = new Set();
+        nns.forEach(n => {
+          if (!seen.has(n.name)) {
+            seen.add(n.name);
+            const tag = document.createElement('span');
+            tag.className = 'note-tag' + (n.isRoot ? ' root' : '');
+            tag.textContent = n.name;
+            notesRow.appendChild(tag);
+          }
+        });
+        card.appendChild(notesRow);
+      } else {
+        const noV = document.createElement('div');
+        noV.className = 'no-voicing';
+        noV.textContent = 'No practical open-position voicing in this key — try a different root or use a capo.';
+        card.appendChild(noV);
+      }
+
+      // Vibe
+      const vibeEl = document.createElement('div');
+      vibeEl.className = 'chord-vibe';
+      vibeEl.textContent = ch.vibe;
+      card.appendChild(vibeEl);
+
+      grid.appendChild(card);
+    });
+
+    container.appendChild(grid);
+  });
+}
+
+document.querySelectorAll('.root-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.root-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderAll(btn.dataset.root);
+  });
+});
+
+renderAll('C');
+</script>
+</body>
+</html>
