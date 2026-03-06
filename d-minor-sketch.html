@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Making Do · Jazz Reference</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inconsolata:wght@300;400;500&display=swap');
+
+  :root {
+    --bg:       #09090c;
+    --surface:  #10101a;
+    --card:     #14141f;
+    --card2:    #1a1a28;
+    --border:   #252535;
+    --violet:   #7a6ab8;
+    --violet2:  #4a3a88;
+    --silver:   #b8b4cc;
+    --gold:     #c8a84a;
+    --rust:     #a03828;
+    --teal:     #2a8a7a;
+    --cream:    #e8e4f0;
+    --muted:    #5a5870;
+    --dim:      #3a384a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Inconsolata', monospace;
+    min-height: 100vh;
+    padding: 0 0 6rem;
+    background-image:
+      radial-gradient(ellipse at 30% 0%, rgba(122,106,184,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 100%, rgba(42,138,122,0.05) 0%, transparent 50%);
+  }
+
+  a { color: var(--violet); text-decoration: none; }
+  a:hover { color: var(--silver); }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  nav a { color: var(--muted); }
+  nav a:hover { color: var(--cream); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 3.5rem 2rem 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin-bottom: 0.8rem;
+  }
+
+  .hero h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+    margin-bottom: 0.6rem;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--violet);
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .meta-pill {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+  }
+
+  .meta-pill span { color: var(--silver); }
+
+  /* ── SECTIONS ── */
+  .page-body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+
+  .section {
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin-bottom: 1.2rem;
+  }
+
+  .section h2 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 1.25rem;
+    color: var(--silver);
+    font-weight: 400;
+    margin-bottom: 1rem;
+    letter-spacing: 0.01em;
+  }
+
+  .prose {
+    font-size: 0.82rem;
+    color: #8a8898;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+
+  .prose p + p { margin-top: 0.8rem; }
+
+  .prose strong { color: var(--silver); font-weight: 500; }
+
+  /* ── CHORD GRID ── */
+  .progression-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .prog-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.6rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .prog-label .bars { color: var(--dim); }
+
+  .chord-row {
+    display: grid;
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .chord-row.bars-8 { grid-template-columns: repeat(8, 1fr); }
+  .chord-row.bars-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .chord-cell {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.6rem 0.4rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .chord-cell.root-chord { border-color: var(--violet2); }
+  .chord-cell.tension    { border-color: rgba(160,56,40,0.5); }
+  .chord-cell.approach   { border-color: rgba(200,168,74,0.4); }
+  .chord-cell.split      { border-color: rgba(200,168,74,0.3); background: linear-gradient(135deg, var(--card2) 50%, rgba(200,168,74,0.05) 50%); }
+
+  .bar-num {
+    font-size: 0.5rem;
+    color: var(--dim);
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+
+  .chord-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 0.88rem;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+    line-height: 1.2;
+  }
+
+  .chord-name.is-root  { color: var(--violet); }
+  .chord-name.is-tense { color: var(--rust); }
+  .chord-name.is-approach { color: var(--gold); font-style: italic; }
+
+  .chord-function {
+    font-size: 0.5rem;
+    color: var(--dim);
+    margin-top: 0.2rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .prog-note {
+    font-size: 0.68rem;
+    color: var(--muted);
+    padding: 0.5rem 1rem 0.7rem;
+    font-style: italic;
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* ── ARRANGEMENT TIMELINE ── */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    border-bottom: 1px solid var(--border);
+    min-height: 44px;
+  }
+
+  .timeline-row:last-child { border-bottom: none; }
+
+  .timeline-row.header {
+    background: var(--surface);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .tl-instrument {
+    padding: 0.7rem 1rem;
+    font-size: 0.72rem;
+    color: var(--silver);
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .tl-instrument .icon { font-size: 0.9rem; opacity: 0.7; }
+
+  .tl-bars {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    align-items: stretch;
+  }
+
+  .tl-cell {
+    border-right: 1px solid var(--border);
+    position: relative;
+    min-height: 44px;
+  }
+
+  .tl-cell:last-child { border-right: none; }
+
+  .tl-cell.active {
+    background: rgba(122,106,184,0.12);
+  }
+
+  .tl-cell.active-melody {
+    background: rgba(42,138,122,0.12);
+  }
+
+  .tl-cell.active-perc {
+    background: rgba(200,168,74,0.08);
+  }
+
+  .tl-cell.active-bass {
+    background: rgba(160,56,40,0.1);
+  }
+
+  .tl-cell.enters {
+    background: rgba(122,106,184,0.25);
+  }
+
+  .tl-cell.enters-melody {
+    background: rgba(42,138,122,0.25);
+  }
+
+  .tl-cell.enters-perc {
+    background: rgba(200,168,74,0.18);
+  }
+
+  .tl-cell.enters-bass {
+    background: rgba(160,56,40,0.22);
+  }
+
+  .tl-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.52rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .section-marker {
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0.4rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+  }
+
+  .section-marker span:first-child {
+    color: var(--violet);
+    border-right: 1px solid var(--border);
+    padding-right: 1rem;
+  }
+
+  /* Phase labels above timeline */
+  .phase-labels {
+    display: grid;
+    grid-template-columns: 140px repeat(8, 1fr);
+    margin-bottom: 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .phase-labels .pl-blank {
+    border-right: 1px solid var(--border);
+    padding: 0.4rem 1rem;
+    font-size: 0.55rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .phase-labels .pl-cell {
+    padding: 0.4rem 0.3rem;
+    text-align: center;
+    font-size: 0.55rem;
+    color: var(--muted);
+    border-right: 1px solid var(--border);
+    letter-spacing: 0.06em;
+  }
+
+  .phase-labels .pl-cell:last-child { border-right: none; }
+  .phase-labels .pl-cell.phase-a { color: var(--violet); }
+  .phase-labels .pl-cell.phase-b { color: var(--teal); }
+  .phase-labels .pl-cell.phase-c { color: var(--gold); }
+
+  .timeline { border-radius: 0 0 8px 8px; }
+
+  /* ── INSTRUMENT NOTES ── */
+  .instrument-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .instrument-grid { grid-template-columns: 1fr; }
+    .chord-row.bars-8 { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .inst-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+  }
+
+  .inst-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .inst-icon { font-size: 1.1rem; }
+
+  .inst-name {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--silver);
+  }
+
+  .inst-role {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+
+  .inst-notes {
+    font-size: 0.72rem;
+    color: #7a7888;
+    line-height: 1.7;
+  }
+
+  .inst-notes li {
+    list-style: none;
+    padding-left: 1rem;
+    position: relative;
+    margin-bottom: 0.2rem;
+  }
+
+  .inst-notes li::before {
+    content: '–';
+    position: absolute;
+    left: 0;
+    color: var(--dim);
+  }
+
+  /* ── PRODUCTION NOTES ── */
+  .prod-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .prod-grid { grid-template-columns: 1fr; }
+  }
+
+  .prod-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+  }
+
+  .prod-title {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.6rem;
+  }
+
+  .prod-notes {
+    font-size: 0.7rem;
+    color: #7a7888;
+    line-height: 1.7;
+  }
+
+  .prod-notes li {
+    list-style: none;
+    padding-left: 1rem;
+    position: relative;
+    margin-bottom: 0.25rem;
+  }
+
+  .prod-notes li::before {
+    content: '·';
+    position: absolute;
+    left: 0;
+    color: var(--dim);
+  }
+
+  /* ── OPEN QUESTIONS ── */
+  .questions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .question {
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+    font-size: 0.75rem;
+    color: #7a7888;
+    padding: 0.6rem 0.8rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    border-left: 2px solid var(--violet2);
+    line-height: 1.5;
+  }
+
+  .question .q-mark {
+    color: var(--violet);
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    flex-shrink: 0;
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">← Jazz Reference</a>
+  <span>Song Sketch · Work in Progress</span>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Composition Sketch</div>
+  <h1><em>Making Do</em></h1>
+  <div style="font-size:0.75rem;color:var(--muted);font-style:italic;font-family:'Libre Baskerville',serif;margin-top:0.3rem;margin-bottom:0.2rem">after Michel de Certeau</div>
+  <div class="hero-meta">
+    <div class="meta-pill">Key <span>D minor</span></div>
+    <div class="meta-pill">Tempo <span>~70–90 bpm</span></div>
+    <div class="meta-pill">Time <span>4/4</span></div>
+    <div class="meta-pill">Form <span>A (8) · breakdown · bridge (8) · A (8)</span></div>
+    <div class="meta-pill">Status <span>Practice / sketch</span></div>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <!-- ── HARMONY ── -->
+  <div class="section">
+    <div class="section-label">Harmony</div>
+    <h2>The Core Progression</h2>
+    <div class="prose">
+      <p>A minor ii–V loop in D minor, extended to 8 bars. The tonic Dm7 arrives only once (bar 3) and never settles — the progression keeps cycling through tension rather than resolution. The final two bars handle the turnaround back to bar 1, with two alternating versions for variety.</p>
+    </div>
+
+    <br>
+
+    <div class="progression-block">
+      <div class="prog-label">
+        <span>Bars 1–8 · Base form</span>
+        <span class="bars">one chord per bar · 4/4</span>
+      </div>
+      <div class="chord-row bars-8">
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 1</div>
+          <div class="chord-name is-tense">Em7♭5</div>
+          <div class="chord-function">iiø</div>
+        </div>
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 2</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">V7♭9</div>
+        </div>
+
+        <div class="chord-cell root-chord">
+          <div class="bar-num">bar 3</div>
+          <div class="chord-name is-root">Dm7</div>
+          <div class="chord-function">i</div>
+        </div>
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 4</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">V7♭9</div>
+        </div>
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 5</div>
+          <div class="chord-name is-tense">Em7♭5</div>
+          <div class="chord-function">iiø</div>
+        </div>
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 6</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">V7♭9</div>
+        </div>
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 7</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">V7♭9</div>
+        </div>
+
+        <div class="chord-cell approach">
+          <div class="bar-num">bar 8</div>
+          <div class="chord-name is-approach">turnaround</div>
+          <div class="chord-function">see below</div>
+        </div>
+
+      </div>
+      <div class="prog-note">Dm7 appears only once and never resolves fully — the progression lives mostly in suspension. Bars 6–7 hold the V7♭9 for two full bars, building pressure before bar 8.</div>
+    </div>
+
+    <div class="progression-block">
+      <div class="prog-label">
+        <span>Bar 8 · Version A · "Descending"</span>
+        <span class="bars">every other 8-bar pass</span>
+      </div>
+      <div class="chord-row bars-4">
+        <div class="chord-cell approach">
+          <div class="bar-num">beat 1–2</div>
+          <div class="chord-name is-approach">B♭7♭9</div>
+          <div class="chord-function">chromatic approach</div>
+        </div>
+        <div class="chord-cell tension">
+          <div class="bar-num">beat 3–4</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">V7♭9 → bar 1</div>
+        </div>
+        <div class="chord-cell" style="background:transparent;border-color:transparent"></div>
+        <div class="chord-cell" style="background:transparent;border-color:transparent">
+          <div class="chord-name" style="font-size:0.7rem;color:var(--muted);font-style:italic;padding-top:0.8rem">half-step down<br>→ loops to Em7♭5</div>
+        </div>
+      </div>
+      <div class="prog-note">B♭ is a half step above A — descending chromatic approach. Has a noir, resigned quality. Related to tritone substitution (B♭7 ≈ E♭7, the tritone sub of A7).</div>
+    </div>
+
+    <div class="progression-block">
+      <div class="prog-label">
+        <span>Bar 8 · Version B · "Ascending"</span>
+        <span class="bars">alternating 8-bar passes</span>
+      </div>
+      <div class="chord-row bars-4">
+        <div class="chord-cell tension">
+          <div class="bar-num">beat 1–2</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">V7♭9</div>
+        </div>
+        <div class="chord-cell approach">
+          <div class="bar-num">beat 3</div>
+          <div class="chord-name is-approach">B♭7♭9</div>
+          <div class="chord-function">+½ step</div>
+        </div>
+        <div class="chord-cell approach">
+          <div class="bar-num">beat 4</div>
+          <div class="chord-name is-approach">B7♭9</div>
+          <div class="chord-function">+1 step</div>
+        </div>
+        <div class="chord-cell" style="background:transparent;border-color:transparent">
+          <div class="chord-name" style="font-size:0.7rem;color:var(--muted);font-style:italic;padding-top:0.8rem">half-step up<br>→ loops to Em7♭5</div>
+        </div>
+      </div>
+      <div class="prog-note">Chromatic walk up — urgent, searching. Ends on B7♭9 which has no obvious gravitational pull, so bar 1's Em7♭5 arrives as a slight surprise. Three chords in one bar: only works comfortably at moderate tempo.</div>
+    </div>
+
+    <br>
+    <div class="prose">
+      <p>The two versions of bar 8 create a 16-bar macro-structure: <strong>Version A</strong> (descending) feels like a phrase completing itself; <strong>Version B</strong> (ascending) feels restless and unresolved. Alternating gives the full loop an arch — tension released, tension renewed.</p>
+    </div>
+  </div>
+
+  <!-- ── FULL FORM ── -->
+  <div class="section">
+    <div class="section-label">Full Form</div>
+    <h2>A · Breakdown · Bridge · A</h2>
+    <div class="prose">
+      <p>The complete piece as currently conceived: two passes of the 8-bar A section, a breakdown to sparse texture, an 8-bar bridge, then return. Total arc runs roughly 3–4 minutes depending on tempo and how many A-section passes you take at the top and end.</p>
+    </div>
+
+    <br>
+
+    <!-- Overall form map -->
+    <div class="progression-block">
+      <div class="prog-label"><span>Overall structure</span></div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;padding:1rem;">
+        <div class="chord-cell root-chord" style="text-align:center;padding:1rem 0.5rem">
+          <div class="chord-name is-root" style="font-size:1rem">A</div>
+          <div class="chord-function">8-bar loop<br>×2–3 passes</div>
+        </div>
+        <div class="chord-cell" style="text-align:center;padding:1rem 0.5rem;border-color:rgba(200,168,74,0.3)">
+          <div class="chord-name" style="color:var(--gold);font-size:1rem">breakdown</div>
+          <div class="chord-function">1–2 passes<br>bass + mando only</div>
+        </div>
+        <div class="chord-cell tension" style="text-align:center;padding:1rem 0.5rem">
+          <div class="chord-name is-tense" style="font-size:1rem">B</div>
+          <div class="chord-function">8-bar bridge<br>new harmony</div>
+        </div>
+        <div class="chord-cell root-chord" style="text-align:center;padding:1rem 0.5rem">
+          <div class="chord-name is-root" style="font-size:1rem">A</div>
+          <div class="chord-function">return<br>full texture → fade</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bridge progression -->
+    <div class="progression-block">
+      <div class="prog-label">
+        <span>B section · Bridge · 8 bars</span>
+        <span class="bars">oscillate then caesura</span>
+      </div>
+      <div class="chord-row bars-8">
+
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 1</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">oscillate</div>
+        </div>
+        <div class="chord-cell approach">
+          <div class="bar-num">bar 2</div>
+          <div class="chord-name is-approach">B♭7♭9</div>
+          <div class="chord-function">+½ step</div>
+        </div>
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 3</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">oscillate</div>
+        </div>
+        <div class="chord-cell approach">
+          <div class="bar-num">bar 4</div>
+          <div class="chord-name is-approach">B♭7♭9</div>
+          <div class="chord-function">+½ step</div>
+        </div>
+        <div class="chord-cell tension">
+          <div class="bar-num">bar 5</div>
+          <div class="chord-name is-tense">A7♭9</div>
+          <div class="chord-function">oscillate</div>
+        </div>
+        <div class="chord-cell approach">
+          <div class="bar-num">bar 6</div>
+          <div class="chord-name is-approach">B♭7♭9</div>
+          <div class="chord-function">+½ step</div>
+        </div>
+        <div class="chord-cell approach" style="border-color:rgba(160,56,40,0.6)">
+          <div class="bar-num">bar 7</div>
+          <div class="chord-name is-approach">Db7</div>
+          <div class="chord-function">6-6-8-7</div>
+        </div>
+        <div class="chord-cell approach" style="border-color:rgba(160,56,40,0.9);background:rgba(160,56,40,0.08)">
+          <div class="bar-num">bar 8</div>
+          <div class="chord-name is-approach">E7</div>
+          <div class="chord-function" style="color:var(--rust)">9-9-11-10 ‖ caesura</div>
+        </div>
+
+      </div>
+      <div class="prog-note">
+        Bars 1–6 oscillate between A7♭9 and B♭7♭9 — a half-step pendulum, never resolving. Bar 7 shifts to Db7 (frets 6-6-8-7), bar 8 to E7 (frets 9-9-11-10, same shape +3 frets). These two chords are a minor third apart on the diminished axis — symmetrically related, sharing harmonic tension without either resolving. Hold bar 8 and stop completely: full caesura before returning to Em7♭5 at the top of A.
+      </div>
+    </div>
+
+    <!-- Breakdown description -->
+    <div class="progression-block">
+      <div class="prog-label"><span>Breakdown · 1–2 passes of the A section</span></div>
+      <div style="padding:1rem;font-size:0.75rem;color:#8a8898;line-height:1.7">
+        Same 8-bar chord sequence as the A section, but stripped to <strong style="color:var(--silver)">upright bass + one mandolin only</strong> (whichever is playing chords). All other instruments drop out — no percussion, no melody, no hand-pan. The harmonic structure remains intact but the texture is skeletal. This serves two purposes: it creates contrast and rest before the bridge, and it makes the full re-entry at the end feel like an arrival. One pass of breakdown is usually enough; two if the mood calls for more space.
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── ARRANGEMENT ── -->
+  <div class="section">
+    <div class="section-label">Arrangement</div>
+    <h2>Full-Piece Timeline</h2>
+
+    <div class="prose">
+      <p>Each column is one 8-bar pass. The piece moves through four phases: A section buildup (passes 1–4), breakdown (pass 5), bridge (pass 6), and return (passes 7–8). Instruments that drop for the breakdown re-enter gradually on the return, so the ending has full texture.</p>
+    </div>
+
+    <br>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(122,106,184,0.5)"></div> chords / harmony</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(42,138,122,0.4)"></div> melody / noodling</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(200,168,74,0.35)"></div> percussion</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(160,56,40,0.4)"></div> bass / low register</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(122,106,184,0.9)"></div> enters this pass</div>
+    </div>
+
+    <div class="phase-labels">
+      <div class="pl-blank">Instrument</div>
+      <div class="pl-cell phase-a">A¹</div>
+      <div class="pl-cell phase-a">A²</div>
+      <div class="pl-cell phase-a">A³</div>
+      <div class="pl-cell phase-a">A⁴</div>
+      <div class="pl-cell" style="color:var(--gold);font-size:0.52rem">break</div>
+      <div class="pl-cell phase-b">bridge</div>
+      <div class="pl-cell phase-c">A⁵</div>
+      <div class="pl-cell phase-c">A⁶</div>
+    </div>
+
+    <div class="timeline">
+
+      <div class="timeline-row">
+        <div class="tl-instrument"><span class="icon">🎸</span> Octave Mando <small style="color:var(--muted);font-size:0.6rem">(chords)</small></div>
+        <div class="tl-bars">
+          <div class="tl-cell enters"><div class="tl-label">enters</div></div>
+          <div class="tl-cell active"></div>
+          <div class="tl-cell active"></div>
+          <div class="tl-cell active"></div>
+          <div class="tl-cell active" style="opacity:0.5"><div class="tl-label" style="color:var(--gold)">solo</div></div>
+          <div class="tl-cell active"></div>
+          <div class="tl-cell enters"><div class="tl-label">re-enters</div></div>
+          <div class="tl-cell active" style="background:rgba(122,106,184,0.06)"><div class="tl-label" style="color:var(--dim)">fade</div></div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="tl-instrument"><span class="icon">🎵</span> Reg. Mando <small style="color:var(--muted);font-size:0.6rem">(melody)</small></div>
+        <div class="tl-bars">
+          <div class="tl-cell"></div>
+          <div class="tl-cell enters-melody"><div class="tl-label">enters</div></div>
+          <div class="tl-cell active-melody"></div>
+          <div class="tl-cell active-melody"></div>
+          <div class="tl-cell"><div class="tl-label" style="color:var(--dim)">out</div></div>
+          <div class="tl-cell active-melody"></div>
+          <div class="tl-cell active-melody"></div>
+          <div class="tl-cell active-melody" style="background:rgba(42,138,122,0.06)"><div class="tl-label" style="color:var(--dim)">fade</div></div>
+        </div>
+      </div>
+
+      <div class="timeline-row" style="background:rgba(122,106,184,0.03)">
+        <div class="tl-instrument" style="font-size:0.62rem;color:var(--muted);font-style:italic">↕ swap roles</div>
+        <div class="tl-bars">
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell" style="background:rgba(122,106,184,0.08)"><div class="tl-label">swap</div></div>
+          <div class="tl-cell active-melody"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell active"></div>
+          <div class="tl-cell"></div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="tl-instrument"><span class="icon">🥁</span> Cajon + Shakers</div>
+        <div class="tl-bars">
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell enters-perc"><div class="tl-label">enters</div></div>
+          <div class="tl-cell active-perc"></div>
+          <div class="tl-cell"><div class="tl-label" style="color:var(--dim)">out</div></div>
+          <div class="tl-cell active-perc" style="opacity:0.5"><div class="tl-label" style="color:var(--gold)">sparse</div></div>
+          <div class="tl-cell enters-perc"><div class="tl-label">re-enters</div></div>
+          <div class="tl-cell active-perc"></div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="tl-instrument"><span class="icon">🎻</span> Upright Bass</div>
+        <div class="tl-bars">
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell enters-bass"><div class="tl-label">enters</div></div>
+          <div class="tl-cell active-bass"><div class="tl-label" style="color:var(--gold)">solo</div></div>
+          <div class="tl-cell active-bass"></div>
+          <div class="tl-cell active-bass"></div>
+          <div class="tl-cell active-bass"></div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="tl-instrument"><span class="icon">🔔</span> Hand-pan <small style="color:var(--muted);font-size:0.6rem">(D min)</small></div>
+        <div class="tl-bars">
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell enters-melody" style="opacity:0.7"><div class="tl-label">sparse</div></div>
+          <div class="tl-cell"><div class="tl-label" style="color:var(--dim)">out</div></div>
+          <div class="tl-cell active-melody"><div class="tl-label" style="color:var(--teal)">featured</div></div>
+          <div class="tl-cell active-melody" style="opacity:0.5"></div>
+          <div class="tl-cell" style="opacity:0.3"><div class="tl-label" style="color:var(--dim)">fade</div></div>
+        </div>
+      </div>
+
+      <div class="timeline-row">
+        <div class="tl-instrument"><span class="icon">🎼</span> Cello <small style="color:var(--muted);font-size:0.6rem">(drones)</small></div>
+        <div class="tl-bars">
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell"></div>
+          <div class="tl-cell enters-bass" style="background:rgba(122,106,184,0.2)"><div class="tl-label">enters</div></div>
+          <div class="tl-cell active-bass" style="opacity:0.6"></div>
+          <div class="tl-cell active-bass" style="opacity:0.3"><div class="tl-label" style="color:var(--dim)">fade</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <br>
+    <div class="prose">
+      <p>The <strong>breakdown</strong> (pass 5) keeps only octave mandolin and upright bass — the harmonic skeleton, no rhythm or color. Lowest energy point of the piece; makes the bridge feel like a genuine departure. The <strong>hand-pan</strong> is featured in the bridge rather than throughout the A section — its timbre suits the oscillating A7♭9/B♭7♭9 pendulum and the Db7→E7 caesura particularly well. The cello enters in the bridge and carries into the return, giving the ending more weight than the opening had.</p>
+      <p>The "swap" row reflects your practice of alternating which mandolin carries chords vs. melody each pass — keeps the texture alive without adding new instruments.</p>
+    </div>
+  </div>
+
+
+  <!-- ── INSTRUMENTS ── -->
+  <div class="section">
+    <div class="section-label">Instrument Notes</div>
+    <h2>Roles &amp; Starting Points</h2>
+
+    <div class="instrument-grid">
+
+      <div class="inst-card">
+        <div class="inst-card-header">
+          <span class="inst-icon">🎸</span>
+          <span class="inst-name">Octave Mandolin</span>
+          <span class="inst-role">Harmony</span>
+        </div>
+        <ul class="inst-notes">
+          <li>Chords sit below the melody register — natural default for harmony</li>
+          <li>Em7♭5: frets 0,0,1,1 · A7♭9: frets 2,2,4,3 · Dm7: frets 2,2,3,3</li>
+          <li>Let chords ring — don't strum aggressively, let the sustain do the work</li>
+          <li>On bar 8 turnaround, consider just the chromatic approach note rather than all three</li>
+        </ul>
+      </div>
+
+      <div class="inst-card">
+        <div class="inst-card-header">
+          <span class="inst-icon">🎵</span>
+          <span class="inst-name">Regular Mandolin</span>
+          <span class="inst-role">Melody</span>
+        </div>
+        <ul class="inst-notes">
+          <li>D natural minor (Aeolian): D E F G A B♭ C D</li>
+          <li>The ♭9 (E♭) over A7♭9 is a color note worth landing on deliberately</li>
+          <li>Bar 7 (two bars of A7♭9) is space to develop a melodic idea and resolve it</li>
+          <li>Swap chord/melody roles every pass to keep texture varied</li>
+        </ul>
+      </div>
+
+      <div class="inst-card">
+        <div class="inst-card-header">
+          <span class="inst-icon">🥁</span>
+          <span class="inst-name">Cajon + Shakers</span>
+          <span class="inst-role">Pulse</span>
+        </div>
+        <ul class="inst-notes">
+          <li>Enter on pass 3 — let harmony establish first</li>
+          <li>Shakers slightly left or right of center; cajon centered</li>
+          <li>At 70–90 bpm, a laid-back feel suits the D minor mood better than driving</li>
+          <li>Consider leaving bar 8 (turnaround) slightly sparse — let the harmonic shift breathe</li>
+        </ul>
+      </div>
+
+      <div class="inst-card">
+        <div class="inst-card-header">
+          <span class="inst-icon">🎻</span>
+          <span class="inst-name">Upright Bass</span>
+          <span class="inst-role">Foundation</span>
+        </div>
+        <ul class="inst-notes">
+          <li>Root notes on beat 1 is enough to start — E, A, D, A, E, A, A, B♭/A</li>
+          <li>Two-feel when ready: root on 1, fifth on 3 (E→B♭, A→E, D→A)</li>
+          <li>Bars 6–7 (both A7♭9): try walking A–B–C#–D across the two bars</li>
+          <li>Medium tempo (80–90) is more forgiving on intonation than very slow</li>
+        </ul>
+      </div>
+
+      <div class="inst-card">
+        <div class="inst-card-header">
+          <span class="inst-icon">🔔</span>
+          <span class="inst-name">Hand-pan · D minor</span>
+          <span class="inst-role">Color</span>
+        </div>
+        <ul class="inst-notes">
+          <li>Use sparingly — a few struck notes per bar, not continuous</li>
+          <li>The sustain fills space naturally; trust it and leave gaps</li>
+          <li>Bar 3 (Dm7 resolution) is a natural moment to land a resonant note</li>
+          <li>The hand-pan's D minor scale already fits — follow your ear</li>
+        </ul>
+      </div>
+
+      <div class="inst-card">
+        <div class="inst-card-header">
+          <span class="inst-icon">🎼</span>
+          <span class="inst-name">Cello</span>
+          <span class="inst-role">Texture · Drone</span>
+        </div>
+        <ul class="inst-notes">
+          <li>Open D and A strings are immediately available and fit the key</li>
+          <li>Slow bowing of D–A–D (double stop or arpeggiated) over Dm7 is enough</li>
+          <li>Imprecise intonation in this context reads as atmosphere, not error</li>
+          <li>Enter late (pass 6) so it feels like arrival rather than furniture</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── PRODUCTION ── -->
+  <div class="section">
+    <div class="section-label">Recording &amp; Production</div>
+    <h2>Notes for Audacity</h2>
+
+    <div class="prod-grid">
+
+      <div class="prod-card">
+        <div class="prod-title">Track Order</div>
+        <ul class="prod-notes">
+          <li>Record octave mandolin chords first as guide track</li>
+          <li>Add regular mandolin melody second</li>
+          <li>Percussion third — lock to the chord track</li>
+          <li>Bass fourth — follow the cajon's downbeat</li>
+          <li>Hand-pan and cello last — they're color, added to taste</li>
+        </ul>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-title">Panning</div>
+        <ul class="prod-notes">
+          <li>Cajon: center</li>
+          <li>Shakers: slight left (~L20)</li>
+          <li>Bass: center or slight right (~R15)</li>
+          <li>Octave mando: left (~L40)</li>
+          <li>Regular mando: right (~R40)</li>
+          <li>Hand-pan: slight right (~R25)</li>
+          <li>Cello: slight left (~L30)</li>
+        </ul>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-title">EQ Priorities</div>
+        <ul class="prod-notes">
+          <li>Bass + cello: cut 200–300hz to reduce mud between them</li>
+          <li>Mandolins: gentle cut around 400hz if they sound boxy</li>
+          <li>Hand-pan: probably needs nothing — it records cleanly</li>
+          <li>Cajon: slight boost 80–100hz for body; cut 300hz</li>
+          <li>Do EQ before adding reverb, not after</li>
+        </ul>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-title">Reverb</div>
+        <ul class="prod-notes">
+          <li>Use the same reverb type on everything — consistency makes it sound like one room</li>
+          <li>Less on bass and cajon (keeps low end tight)</li>
+          <li>More on hand-pan and cello (suits their sustain)</li>
+          <li>Medium room, not large hall — this is intimate music</li>
+        </ul>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-title">USB / Hardware</div>
+        <ul class="prod-notes">
+          <li>A powered USB hub between Yeti and computer often fixes dodgy connections</li>
+          <li>Try a different USB cable first — they fail more often than the mic</li>
+          <li>In Audacity: set buffer size higher (512 or 1024) if you get clicks</li>
+          <li>Record one track at a time to reduce USB bandwidth</li>
+        </ul>
+      </div>
+
+      <div class="prod-card">
+        <div class="prod-title">Mic Placement</div>
+        <ul class="prod-notes">
+          <li>Yeti cardioid mode for most instruments</li>
+          <li>Point at the soundhole from ~30–40cm for mandolin</li>
+          <li>For bass: aim at the upper bout, not the f-hole (less boomy)</li>
+          <li>Cajon: mic from behind (the port) for more body</li>
+          <li>Hand-pan: some distance (60cm+) — it's loud and rich up close</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── OPEN QUESTIONS ── -->
+  <div class="section">
+    <div class="section-label">Open Questions</div>
+    <h2>Still to Decide</h2>
+
+    <div class="questions">
+      <div class="question">
+        <span class="q-mark">?</span>
+        <span>Does the song need a contrasting section (a B section in a different tonality or mood), or does the loop sustain interest on its own through arrangement and improvisation?</span>
+      </div>
+      <div class="question">
+        <span class="q-mark">?</span>
+        <span>Tempo: 70 bpm feels spacious and clear; 80–90 bpm would help bass intonation and make the bar-8 chromatic runs more natural. Worth recording both and comparing.</span>
+      </div>
+      <div class="question">
+        <span class="q-mark">?</span>
+        <span>Does the piece have a name? The D minor + hand-pan combination has a specific character — modal, slightly Middle-Eastern, chamber-like. A title would help fix the mood when recording.</span>
+      </div>
+      <div class="question">
+        <span class="q-mark">?</span>
+        <span>The cello is mostly untapped. Even one sustained drone note per pass would add significantly to the low-mid register. Worth experimenting before deciding it's not ready to use.</span>
+      </div>
+      <div class="question">
+        <span class="q-mark">?</span>
+        <span>Bar 8 Version B (ascending walk A7♭9→B♭7♭9→B7♭9) is three chords in one bar. At what tempo does this become comfortable vs. rushed? Only playback will tell.</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page-body -->
+
+</body>
+</html>
